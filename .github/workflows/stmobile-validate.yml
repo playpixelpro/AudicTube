@@ -5,7 +5,7 @@ name: stmobile validate
 # upstream-sync PRs, where it's the human-judgment safety net).
 #
 # Three integration points checked (from rebase_runbook):
-#   1. smarttubetv/build.gradle — stmobile product flavor with the com.codesculptor.smartertube applicationId
+#   1. smarttubetv/build.gradle — stmobile product flavor with the com.playpixelpro.audictube applicationId
 #   2. common/build.gradle      — stmobile flavor with ststable matchingFallbacks
 #   3. MainApplication.java     — protected setupViewManager (widened from private)
 
@@ -36,7 +36,7 @@ jobs:
         run: |
           # Tolerate both 'matchingFallbacks [...]' and 'matchingFallbacks = [...]'
           # (smarttubetv/build.gradle uses the '=' assignment form).
-          grep -E 'applicationId\s+"com\.codesculptor\.smartertube"' smarttubetv/build.gradle
+          grep -E 'applicationId\s+"com\.playpixelpro\.audictube"' smarttubetv/build.gradle
           grep -E "matchingFallbacks\s*=?\s*\['ststable'\]" smarttubetv/build.gradle
           echo "OK: stmobile flavor present with com.playpixelpro.audictube id and ststable fallback"
 
