@@ -149,7 +149,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_brand_logo"
+                android:src="@drawable/brand_logo"
                 android:contentDescription="@string/app_name" />
 
             <TextView

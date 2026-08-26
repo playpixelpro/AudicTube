@@ -40,7 +40,6 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.controllers.SuggestionsController;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerUI;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.BrowsePresenter;
-import com.liskovsoft.smartyoutubetv2.common.app.presenters.ChannelPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.common.misc.MediaServiceManager;
 import com.liskovsoft.smartyoutubetv2.common.misc.RemoteControlService;
@@ -215,6 +214,18 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         applyMobileLayout();
+        syncFullscreenButtonState();
+    }
+
+    /** Updates the fullscreen button icon to match the current orientation. */
+    private void syncFullscreenButtonState() {
+        if (getPlayerGlue() == null) return;
+        int orientation = getResources().getConfiguration().orientation;
+        boolean isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE;
+        // When in landscape (fullscreen), the button should show "exit fullscreen" (ON).
+        // When in portrait (strip), the button should show "enter fullscreen" (OFF).
+        getPlayerGlue().setButtonState(R.id.action_fullscreen,
+                isLandscape ? PlayerUI.BUTTON_ON : PlayerUI.BUTTON_OFF);
     }
 
     @Override
@@ -417,7 +428,8 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     private void setDescriptionExpanded(boolean expanded) {
         if (mDescriptionView != null) {
             mDescriptionView.setVisibility(expanded ? View.VISIBLE : View.GONE);
-            mExpandView.setText(expanded ? "▴" : "▾");
+            // Show close (X) when expanded, expand arrow (▾) when collapsed.
+            mExpandView.setText(expanded ? "✕" : "▾");
         }
     }
 
@@ -506,6 +518,8 @@ public class MobilePlaybackFragment extends PlaybackFragment {
      * empty video could press an invisible control. In Shorts mode this also drives the vertical
      * pager drag and the tap-to-toggle play/pause behavior.
      * Called from the activity's dispatchTouchEvent; returns true to consume the event.
+     *
+     * Single tap toggles the player controls: if hidden, show; if shown, hide immediately.
      */
     public boolean interceptPlayerTouch(MotionEvent event) {
         View playerView = getView();
@@ -516,10 +530,25 @@ public class MobilePlaybackFragment extends PlaybackFragment {
             return handleShortsTouchEvent(event);
         }
 
-        // Non-Shorts: original phantom-tap guard.
-        if (isOverlayShown()) return false;
+        // Non-Shorts: toggle controls on tap.
         if (event.getY() > playerView.getBottom()) return false;
-        onDispatchTouchEvent(event); // overlay tickle + double-tap seek
+
+        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            if (isOverlayShown()) {
+                // Controls are showing — hide them immediately
+                hideControlsOverlay(true);
+                return true;
+            }
+            // Controls are hidden: let the double-tap adapter + tickle handle it
+            onDispatchTouchEvent(event);
+            return true;
+        }
+
+        // Let DOWN/MOVE/CANCEL propagate for double-tap detection, but consume
+        // so they don't hit invisible control buttons behind the faded overlay.
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            onDispatchTouchEvent(event);
+        }
         return true;
     }
 
@@ -643,6 +672,7 @@ public class MobilePlaybackFragment extends PlaybackFragment {
         String ratio = isShorts ? "H,9:16" : "H,16:9";
 
         syncCompactControls(strip);
+        syncFullscreenButtonState();
 
         applyOverlayDecorVisibility(strip);
 
@@ -1325,7 +1355,6 @@ public class MobilePlaybackFragment extends PlaybackFragment {
                 setDescriptionExpanded(mDescriptionView.getVisibility() != View.VISIBLE));
         // Long descriptions scroll inside the text view instead of pushing the list away.
         mDescriptionView.setMovementMethod(new android.text.method.ScrollingMovementMethod());
-        mDescriptionView.setOnClickListener(v -> setDescriptionExpanded(false));
 
         mUpNextAdapter = new UpNextRowAdapter(
                 video -> PlaybackPresenter.instance(getContext()).onSuggestionItemClicked(video));
@@ -1335,12 +1364,17 @@ public class MobilePlaybackFragment extends PlaybackFragment {
         View channelRow = activity.findViewById(R.id.mobile_video_channel_row);
         if (channelRow != null) {
             channelRow.setOnClickListener(v -> {
-                Video current = PlaybackPresenter.instance(getContext()).getVideo();
-                if (current != null) ChannelPresenter.instance(getContext()).openChannel(current);
+                // Uses the existing PiP + channel navigation in PlayerUIController
+                PlaybackPresenter.instance(getContext()).onButtonClicked(R.id.action_channel, 0);
             });
         }
 
         mPortraitAvatarView = activity.findViewById(R.id.mobile_video_channel_avatar);
+        if (mPortraitAvatarView != null) {
+            mPortraitAvatarView.setOnClickListener(v -> {
+                PlaybackPresenter.instance(getContext()).onButtonClicked(R.id.action_channel, 0);
+            });
+        }
         mPortraitLikeBtn = activity.findViewById(R.id.mobile_video_like_btn);
         mPortraitDislikeBtn = activity.findViewById(R.id.mobile_video_dislike_btn);
         if (mPortraitLikeBtn != null) {
@@ -1367,6 +1401,11 @@ public class MobilePlaybackFragment extends PlaybackFragment {
         mShortsInfoBar = activity.findViewById(R.id.mobile_shorts_info_bar);
         mShortsTitleView = activity.findViewById(R.id.shorts_bar_title);
         mShortsChannelView = activity.findViewById(R.id.shorts_bar_channel);
+        if (mShortsChannelView != null) {
+            mShortsChannelView.setOnClickListener(v -> {
+                PlaybackPresenter.instance(getContext()).onButtonClicked(R.id.action_channel, 0);
+            });
+        }
 
         if (mShortsActionRail != null) {
             mShortsLikeBtn = mShortsActionRail.findViewById(R.id.mobile_shorts_like_btn);

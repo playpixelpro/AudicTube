@@ -6,6 +6,6 @@
          to the activity's normal theme. -->
     <style name="Theme.SmarterTube.Splash" parent="Theme.SmarterTube.Mobile">
         <item name="android:windowSplashScreenBackground">@color/brand_primary</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/brand_logo</item>
     </style>
 </resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ko-fi branded button background: rounded rect with Ko-fi coral (#FF5E5B). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#FF5E5B" />
+    <corners android:radius="8dp" />
+</shape>

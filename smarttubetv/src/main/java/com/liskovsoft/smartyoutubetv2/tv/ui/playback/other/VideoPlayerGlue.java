@@ -34,6 +34,7 @@ import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.ChatAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.ClosedCaptioningAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.ContentBlockAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.FlipAction;
+import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.FullscreenAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.HighQualityAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.RotateAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.ScreenDimmingAction;
@@ -134,6 +135,7 @@ public class VideoPlayerGlue extends MaxControlsVideoPlayerGlue<PlayerAdapter> i
         putAction(new RotateAction(context));
         putAction(new FlipAction(context));
         putAction(new SoundOffAction(context));
+        putAction(new FullscreenAction(context));
     }
 
     @Override
@@ -237,6 +239,8 @@ public class VideoPlayerGlue extends MaxControlsVideoPlayerGlue<PlayerAdapter> i
         if (mPlayerTweaksData.isPlayerButtonEnabled(PlayerTweaksData.PLAYER_BUTTON_VIDEO_STATS)) {
             adapter.add(mActions.get(R.id.action_video_stats));
         }
+        // Fullscreen toggle: always available in all player layouts.
+        adapter.add(mActions.get(R.id.action_fullscreen));
     }
 
     @Override
@@ -283,6 +287,8 @@ public class VideoPlayerGlue extends MaxControlsVideoPlayerGlue<PlayerAdapter> i
             if (mPlayerTweaksData.isPlayerButtonEnabled(PlayerTweaksData.PLAYER_BUTTON_HIGH_QUALITY)) {
                 primary.add(mActions.get(R.id.lb_control_high_quality));
             }
+            // Fullscreen toggle: always visible in compact (portrait strip) mode.
+            primary.add(mActions.get(R.id.action_fullscreen));
         } else {
             onCreatePrimaryActions(primary);
             if (secondary != null) {

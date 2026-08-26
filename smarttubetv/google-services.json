@@ -1,98 +1,26 @@
 {
   "project_info": {
-    "project_number": "431299132531",
-    "firebase_url": "https://smarttube-tv.firebaseio.com",
-    "project_id": "smarttube-tv",
-    "storage_bucket": "smarttube-tv.firebasestorage.app"
+    "project_number": "155649046636",
+    "project_id": "audictube",
+    "storage_bucket": "audictube.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:431299132531:android:142c1f934017b678cd7e06",
+        "mobilesdk_app_id": "1:155649046636:android:13d428fa3b7f582c790049",
         "android_client_info": {
-          "package_name": "app.smarttube.stable"
+          "package_name": "com.playpixelpro.audictube"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "431299132531-hfd0kvpr6nkeuvkbr37kf1sbau626mr1.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCNXymxUj6ZzmY7WtuhPsWreRHmvMGCVSM"
-        },
-        {
-          "current_key": "AIzaSyDGtSwgX8rNR8wpQXRRCTDUs4kehsRvfEg"
+          "current_key": "AIzaSyBkwSaAV4Zt6f-dX6lNynFM_QB6s2-UjFo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "431299132531-hfd0kvpr6nkeuvkbr37kf1sbau626mr1.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:431299132531:android:0c0bc4ac02047b30cd7e06",
-        "android_client_info": {
-          "package_name": "org.smarttube.beta"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "431299132531-hfd0kvpr6nkeuvkbr37kf1sbau626mr1.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDGtSwgX8rNR8wpQXRRCTDUs4kehsRvfEg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "431299132531-hfd0kvpr6nkeuvkbr37kf1sbau626mr1.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:431299132531:android:41bf2e0686efe091cd7e06",
-        "android_client_info": {
-          "package_name": "org.smarttube.stable"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "431299132531-hfd0kvpr6nkeuvkbr37kf1sbau626mr1.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDGtSwgX8rNR8wpQXRRCTDUs4kehsRvfEg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "431299132531-hfd0kvpr6nkeuvkbr37kf1sbau626mr1.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

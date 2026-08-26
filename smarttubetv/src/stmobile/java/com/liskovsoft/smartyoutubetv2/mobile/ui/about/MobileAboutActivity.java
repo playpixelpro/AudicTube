@@ -43,6 +43,11 @@ public class MobileAboutActivity extends AppCompatActivity {
                 openUrl(getString(R.string.mobile_about_url_fork)));
 
         findViewById(R.id.btn_check_updates).setOnClickListener(v -> checkForUpdates());
+
+        findViewById(R.id.btn_support_kofi).setOnClickListener(v ->
+                openUrl(getString(R.string.mobile_about_url_kofi)));
+        findViewById(R.id.btn_support_buymeacoffee).setOnClickListener(v ->
+                openUrl(getString(R.string.mobile_about_url_buymeacoffee)));
     }
 
     /**

@@ -1,14 +1,10 @@
-# SmarterTube
+# 🎵 AudicTube
 
-**A phone and tablet YouTube client for Android.**
+**A phone and tablet YouTube client for Android.**  
 
-SmarterTube is **not a patched YouTube app and not a wrapper** — it is a native Android phone/tablet UI built on SmartTube's existing YouTube client engine.
+AudicTube is a fork of [CodeSculptor/SmarterTube](https://github.com/CodeSculptor/SmarterTube) (which is itself a fork of [yuliskov/SmartTube](https://github.com/yuliskov/SmartTube) — an Android TV YouTube client). The upstream SmartTube is **TV-only** by design; SmarterTube added a native phone/tablet interface on top of its engine. AudicTube builds on that work with further mobile-first enhancements, refinements, and a fresh identity.
 
-It is a fork of [SmartTube](https://github.com/yuliskov/SmartTube) by yuliskov. It adds a native portrait UI — drawer navigation, search, channel pages, settings, sign-in — on top of SmartTube's YouTube client engine, which is merged from upstream unchanged on every release. Upstream SmartTube is TV-only by design; this fork exists for phones and tablets.
-
-> **Beta.** A native phone & tablet UI — Home, Search, Channel, Channel Uploads, Settings, sign-in, and playback — built on SmartTube's YouTube engine. Core flows work; some upstream features aren't surfaced in the phone UI yet, and landscape/tablet layouts are still being audited. Unlike app-modifiers, these are real native Android screens, not a repackaged YouTube APK.
->
-> Earlier `31.xx-mobile-1.x` builds were published as full `1.x` releases too early. SmarterTube is now reset to a beta line with a clearer version scheme — see [Versioning & releases](#versioning--releases).
+**AudicTube is not a patched YouTube APK and not a wrapper** — it is a native Android app built on SmartTube's YouTube client engine.
 
 <p align="center">
   <img src="images/phone_browse.png" width="260" alt="Browsing music charts and trending videos"/>
@@ -24,116 +20,71 @@ It is a fork of [SmartTube](https://github.com/yuliskov/SmartTube) by yuliskov. 
 
 ---
 
-## Relationship to SmartTube
+## ✨ What's New in AudicTube
 
-SmarterTube is an **unofficial fork** of [yuliskov/SmartTube](https://github.com/yuliskov/SmartTube). The playback/client engine, ad blocking, SponsorBlock, Return YouTube Dislike and DeArrow integration — all the under-the-hood behaviour — come from upstream SmartTube, unchanged. This fork's job is to provide a native phone/tablet interface while keeping the upstream structure intact, so non-UI updates can be merged in regularly.
+This fork adds several mobile-first enhancements on top of SmarterTube's foundation:
 
+| Feature | Description |
+|---------|-------------|
+| **🎨 Fresh branding** | Renamed to AudicTube with new logo, app icon, and in-app branding |
+| **📱 16KB page alignment** | Native libraries fixed for Android 15+ compatibility — no more "app not compatible" warnings |
+| **🔄 Semantic versioning** | Version scheme simplified to pure semver (`v1.0.0`, `v1.1.0-beta.1`) following [conventionalcommits.org](https://www.conventionalcommits.org/en/v1.0.0/) |
+| **🖼️ Fullscreen toggle** | New button in the player controls to switch between portrait strip and landscape fullscreen — no need to physically rotate your device |
+| **📦 In-app update checker** | Built-in update checker that queries GitHub releases, respects release channels (alpha/beta/stable), and downloads the right APK for your device's ABI |
+| **🤖 Automated GitHub builds** | CI workflow that builds signed release APKs on tag push or manual trigger, generates changelogs, and publishes GitHub Releases automatically |
+| **🔧 Background & fixes** | Various stability improvements, crash fixes, and mobile UX refinements |
 ---
 
-## Versioning & releases
+## Relationship to Upstream
 
-SmarterTube is currently **beta**. It uses its own product version and records the upstream SmartTube base separately:
-
-```text
-v0.4.0-beta.1+st31.93
-   |              |
-   |              +-- upstream SmartTube base (metadata only)
-   +-- SmarterTube product version (semver + release channel)
+```
+yuliskov/SmartTube (Android TV)
+       └── CodeSculptor/SmarterTube (adds phone/tablet UI)
+                └── playpixelpro/AudicTube (mobile-first enhancements)
 ```
 
-- The SmarterTube app version (`v0.4.0-beta.1`) is tracked **separately** from the upstream SmartTube base (`st31.93`).
-- Earlier `31.xx-mobile-1.x` releases mixed those two numbers and were marked as full `1.x` releases prematurely. They are **superseded** by this beta reset and are treated as legacy by the updater.
-- Public **beta/stable** releases normally track **SmartTube stable**. Upstream SmartTube **beta/head** is used only for SmarterTube **alpha** builds or emergency YouTube-breaking fixes (called out in the release notes).
+- **[yuliskov/SmartTube](https://github.com/yuliskov/SmartTube)** — the original Android TV YouTube client. The playback engine, ad blocking, SponsorBlock, Return YouTube Dislike, DeArrow, and all InnerTube API code come from upstream, merged unchanged on every release.
+- **[CodeSculptor/SmarterTube](https://github.com/CodeSculptor/SmarterTube)** — the first fork to add a native phone/tablet UI (portrait mode, drawer navigation, touch-friendly controls) on top of SmartTube's engine.
+- **AudicTube** — continues that work with further mobile refinements, a fresh identity, automated builds, and modern Android compatibility fixes.
 
-Full policy: [docs/VERSIONING.md](docs/VERSIONING.md) · [docs/RELEASE_PROCESS.md](docs/RELEASE_PROCESS.md) · [docs/UPDATER_COMPATIBILITY.md](docs/UPDATER_COMPATIBILITY.md). Per-release status lives in [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md) and [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md).
-
----
-
-## Why this exists
-
-Upstream SmartTube is built for Android TV — a leanback, 10-foot, D-pad interface. Phones and tablets need touch-native navigation instead. SmarterTube adds that UI while preserving upstream compatibility, so engine and feature updates keep flowing in from SmartTube.
-
-| Project | Approach |
-|---|---|
-| SmartTube (upstream) | Android TV / leanback (10-foot) UI |
-| SmarterTube (this fork) | Native phone/tablet touch UI on SmartTube's engine |
-| App-patching tools | Patch or modify the official YouTube app itself |
+> **A huge thank you to [CodeSculptor](https://github.com/CodeSculptor) for SmarterTube** — the phone/tablet foundation this fork builds on would not exist without their work. And thank you to [yuliskov](https://github.com/yuliskov) for SmartTube, the original YouTube client engine that makes all of this possible.
 
 ---
 
-## Download
+## Versioning
 
-[**GitHub Releases →**](https://github.com/CodeSculptor/SmarterTube/releases)
+AudicTube follows **pure semantic versioning** (SemVer 2.0):
 
-Pick the APK for your device:
-
-| ABI | Who needs it |
-|---|---|
-| `arm64-v8a` | Most Android phones made after 2016 |
-| `armeabi-v7a` | Older 32-bit devices |
-| `x86` | Emulators |
-| `universal` | Everything — larger file |
-
-SmarterTube installs as `com.playpixelpro.audictube` and is **co-installable** with the upstream SmartTube TV build (`app.smarttube`). They do not conflict.
-
-> **Upgrading from a build before this rename?** Versions up to `v0.4.2-beta.8` shipped under the old package `app.smarttube.mobile`. The new id is a separate app, so it installs *alongside* the old one rather than upgrading it — uninstall the old SmarterTube after installing this one. Settings and signed-in accounts do not carry over and need to be set up again (one-time).
-
-### Auto-updates via Obtainium
-
-SmarterTube is not on any app store. [Obtainium](https://github.com/ImranR98/Obtainium) installs and auto-updates apps straight from their GitHub Releases — no store and no central repository involved:
-
-1. Install Obtainium (itself sideloaded from its own GitHub Releases).
-2. **Add App** → paste `https://github.com/CodeSculptor/SmarterTube`.
-3. Obtainium tracks each new release automatically; choose the `arm64-v8a` asset (or `universal`) when prompted.
-
-This is the easiest way to stay current.
-
-### Install via F-Droid (self-hosted repo)
-
-SmarterTube runs its **own** F-Droid repository — the same APKs as GitHub Releases, signed with the same key, so installs upgrade in place. It is a self-hosted repo (not the official F-Droid index): you add it once in the F-Droid client and get auto-updates.
-
-1. Install [F-Droid](https://f-droid.org/) (or a compatible client such as Droid-ify).
-2. **Settings → Repositories → Add** this URL (fingerprint included so the client verifies it):
-
-   ```
-   https://codesculptor.github.io/SmarterTube/fdroid/repo?fingerprint=C7AE86B0A3291B5D7396411BE185C60B298C9D25012172DDFC859B25B540A46B
-   ```
-
-3. Refresh, search for **SmarterTube**, and install. Updates then arrive through F-Droid automatically.
-
-> The repo serves SmarterTube's own builds only; it is not affiliated with the official F-Droid repository or with upstream SmartTube.
-
-Official builds are published only on this GitHub Releases page (and the SmarterTube F-Droid repo above) unless another source is explicitly linked here.
-
-### Verifying your download
-
-Release APKs are named `SmarterTube-<version>-st<base>-<arch>.apk` (e.g. `SmarterTube-v0.4.0-beta.1-st31.93-arm64-v8a.apk`).
-
-Every APK on the Releases page carries a **SHA-256 digest**, shown by GitHub next to the asset. After downloading, compare it against the file on your device:
-
-```bash
-# Linux/macOS
-sha256sum SmarterTube-*.apk
-# Windows (PowerShell)
-Get-FileHash SmarterTube-*.apk -Algorithm SHA256
+```
+v1.0.0
+v1.1.0-beta.1
+v2.0.0
 ```
 
-If the hash matches the one GitHub shows for that asset, the file is intact.
+| Format | Example | Meaning |
+|--------|---------|---------|
+| `v1.0.0` | `v1.0.0` | Stable release |
+| `v1.1.0-beta.1` | `v1.1.0-beta.1` | Beta pre-release |
+| `v1.0.0-rc.1` | `v1.0.0-rc.1` | Release candidate |
+
+APK assets follow the naming pattern: `AudicTube-v1.0.0-arm64-v8a.apk`
 
 ---
 
-## What works
+## 📱 What works
 
 ### Phone UI (this fork adds)
 - Portrait home screen with drawer navigation (Home, Shorts, Kids, Sports, LIVE, Gaming, News, Music, Channels, Subscriptions, History, Playlists, My videos)
 - Search with suggestions and results grid, plus voice search
 - Channel pages and channel uploads
 - Portrait settings screen
-- Sign in / sign out — OAuth device-code flow via in-app browser tab. Switch between multiple accounts with one tap on the toolbar avatar (long-press for account management), or from Settings
-- About screen (drawer footer)
-- Playback: landscape for regular videos, portrait for Shorts
+- Sign in / sign out — OAuth device-code flow via in-app browser tab
+- About screen with **in-app update checker**
+- **Fullscreen toggle button** in player controls
+- **Picture-in-Picture (PiP)** — enabled by default when pressing Back or Home
+- PiP / background audio / playback settings
 
-### From upstream SmartTube (YouTube client engine, unchanged)
+### From upstream (YouTube client engine, unchanged)
 - SponsorBlock integration
 - Return YouTube Dislike
 - DeArrow
@@ -144,49 +95,118 @@ If the hash matches the one GitHub shows for that asset, the file is intact.
 
 ---
 
-## Known limitations & risks
+## ⬇️ Download
 
-SmarterTube is a **beta** release. A few realities are worth knowing before you install:
+[**GitHub Releases →**](https://github.com/playpixelpro/AudicTube/releases)
+
+Pick the APK for your device:
+
+| ABI | Who needs it |
+|:---|---|
+| `arm64-v8a` | Most Android phones made after 2016 |
+| `armeabi-v7a` | Older 32-bit devices |
+| `x86` | Emulators |
+| `universal` | Everything — larger file |
+
+AudicTube installs as `com.playpixelpro.audictube` and is **co-installable** with the upstream SmartTube TV build (`app.smarttube`). They do not conflict.
+
+### Auto-updates via Obtainium
+
+1. Install [Obtainium](https://obtainium.imranr.dev/)
+2. **Add App** → paste `https://github.com/playpixelpro/AudicTube`
+3. Obtainium tracks each new release automatically; choose the `arm64-v8a` asset (or `universal`) when prompted.
+
+This is the easiest way to stay current.
+
+### Verifying your download
+
+Every APK on the Releases page carries a **SHA-256 digest**. After downloading, compare it against the file on your device:
+
+```bash
+# Linux/macOS
+sha256sum AudicTube-*.apk
+# Windows (PowerShell)
+Get-FileHash AudicTube-*.apk -Algorithm SHA256
+```
+
+If the hash matches the one GitHub shows for that asset, the file is intact.
+
+---
+
+## ⚠️ Known limitations
 
 - **Not all upstream features are surfaced yet** — the phone UI covers the core journey (Home, Search, Channel, Settings, sign-in, playback); some upstream options remain reachable only through the settings screens, and a few aren't wired into the phone UI at all.
-- **Upstream / YouTube breakage** — YouTube changes its private APIs without warning, which can break playback at any time. Fixes depend on upstream SmartTube's cadence, then a re-merge here.
+- **YouTube API breakage** — YouTube changes its private APIs without warning, which can break playback at any time. Fixes depend on upstream SmartTube's cadence, then a merge here.
 - **Sideload only** — not on any app store. Install the APK yourself from Releases, or use [Obtainium](#auto-updates-via-obtainium) to install and auto-update directly from GitHub.
-- **No guarantees** — this is an independent fork with no affiliation to Google/YouTube or to upstream SmartTube's author.
+- **No guarantees** — this is an independent fork with no affiliation to Google/YouTube or to upstream authors.
 
 Specific gaps:
 
 - **TV / leanback interface** — install [upstream SmartTube](https://github.com/yuliskov/SmartTube) for Android TV boxes and sticks.
-- **Official F-Droid / IzzyOnDroid index** — not listed there; instead use GitHub Releases, [Obtainium](#auto-updates-via-obtainium), or SmarterTube's own [F-Droid repo](#install-via-f-droid-self-hosted-repo).
 - **Casting / Chromecast** — not currently exposed in the phone UI.
 
 ---
 
-## Building
+## 🔧 Building
 
 Requires JDK 17 and Android SDK.
 
 ```bash
-# Debug
+# Debug (phone build)
 ./gradlew :smarttubetv:assembleStmobileDebug
 
-# Release (needs keystore.properties + smartertube-release.jks at repo root)
+# Release (needs keystore.properties + key.jks at repo root)
 ./gradlew :smarttubetv:assembleStmobileRelease
 ```
 
 Output APKs land in `smarttubetv/build/outputs/apk/stmobile/`.
 
+### Automated builds
+Push a tag matching `v*` to trigger the CI workflow, which builds, signs, and publishes a GitHub Release automatically:
+
+```bash
+git tag v1.0.0
+git push --tags
+```
+
 All phone-specific code lives under `smarttubetv/src/stmobile/` — no changes to `src/main` (TV code) except bug fixes that benefit both targets, which are submitted upstream.
 
 ---
 
-## Upstream & maintenance
+## 🙏 Credits
 
-The YouTube client engine (MediaServiceCore, ExoPlayer, InnerTube API code) is upstream's work and is merged from [yuliskov/SmartTube](https://github.com/yuliskov/SmartTube) on every release. Bug fixes that apply to both the TV and phone targets are submitted upstream rather than kept here — see open PRs for current patches. (Code layout is described under [Building](#building).)
+- **[yuliskov](https://github.com/yuliskov)** — creator of [SmartTube](https://github.com/yuliskov/SmartTube), the original Android TV YouTube client that powers this app
+- **[CodeSculptor](https://github.com/CodeSculptor)** — creator of [SmarterTube](https://github.com/CodeSculptor/SmarterTube), the phone/tablet fork this project builds upon
+- All upstream contributors whose work makes this possible
+
+---
+
+## ☕ Support
+
+If you enjoy using AudicTube, consider supporting the project! Your contributions help keep development active and bring new features to life.
+
+<p align="center">
+  <a href="https://ko-fi.com/playpixelpro">
+    <img src="https://img.shields.io/badge/Ko--fi-Support%20Me%20with%20a%20Coffee-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Ko-fi" height="40"/>
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://buymeacoffee.com/playpixelpro">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20My%20Work-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" height="40"/>
+  </a>
+</p>
+
+<p align="center">
+  <sub>Every bit of support means the world — thank you! 🙏</sub>
+</p>
+
+---
+
+## 📄 License
 
 Licensed under [MIT](LICENSE), same as upstream.
 
 ---
 
-## Privacy
+## 🔒 Privacy
 
 See [PRIVACY.md](PRIVACY.md).

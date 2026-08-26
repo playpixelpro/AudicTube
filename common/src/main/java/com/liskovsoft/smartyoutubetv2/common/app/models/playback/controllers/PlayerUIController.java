@@ -1,5 +1,9 @@
 package com.liskovsoft.smartyoutubetv2.common.app.models.playback.controllers;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.KeyEvent;
@@ -620,6 +624,26 @@ public class PlayerUIController extends BasePlayerController {
             onDislikeClicked(buttonState);
         } else if (buttonId == R.id.action_thumbs_up) {
             onLikeClicked(buttonState);
+        } else if (buttonId == R.id.action_fullscreen) {
+            onFullscreenClicked();
+        }
+    }
+
+    /** Toggles fullscreen (landscape) vs portrait (strip) for phone builds. No-op on TV. */
+    private void onFullscreenClicked() {
+        Context context = getContext();
+        if (!(context instanceof Activity)) {
+            return;
+        }
+        Activity activity = (Activity) context;
+
+        int current = activity.getResources().getConfiguration().orientation;
+        boolean isLandscape = current == Configuration.ORIENTATION_LANDSCAPE;
+
+        if (isLandscape) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
 

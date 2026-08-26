@@ -17,6 +17,7 @@ import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerConstants;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.service.SidebarService;
 import com.liskovsoft.smartyoutubetv2.common.prefs.AppPrefs;
+import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerTweaksData;
 import com.liskovsoft.smartyoutubetv2.mobile.ui.browse.MobileBrowseActivity;
@@ -87,17 +88,22 @@ public class MobileApplication extends MainApplication {
     }
 
     /**
-     * Default phones to background audio playback. Upstream defaults to BACKGROUND_MODE_DEFAULT,
-     * which releases the player when the screen turns off — so locking the phone stops playback
-     * and no lockscreen media controls appear. Phone users expect audio to keep playing, so we set
-     * BACKGROUND_MODE_SOUND once. Done once so a user who deliberately changes it keeps their
-     * choice. stmobile-only; shared common code is untouched, keeping the fork upstream-mergeable.
+     * Default phones to PiP (picture-in-picture) mode. Upstream defaults to BACKGROUND_MODE_DEFAULT,
+     * which releases the player when the screen turns off. Phone users expect video to keep playing
+     * in a small window, so we set BACKGROUND_MODE_PIP once. Done once so a user who deliberately
+     * changes it keeps their choice. stmobile-only; shared common code is untouched, keeping the
+     * fork upstream-mergeable.
+     *
+     * Also sets the background playback shortcut to BACK, so pressing Back enters PiP instead of
+     * finishing the player. The user can change both in player settings.
      */
     private void defaultBackgroundPlaybackOnce() {
         SharedPreferences prefs = getSharedPreferences("mobile_player_prefs", MODE_PRIVATE);
-        if (!prefs.getBoolean("background_sound_defaulted", false)) {
-            PlayerData.instance(this).setBackgroundMode(PlayerConstants.BACKGROUND_MODE_SOUND);
-            prefs.edit().putBoolean("background_sound_defaulted", true).apply();
+        if (!prefs.getBoolean("background_pip_defaulted", false)) {
+            PlayerData.instance(this).setBackgroundMode(PlayerConstants.BACKGROUND_MODE_PIP);
+            GeneralData.instance(this).setBackgroundPlaybackShortcut(
+                    GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_BACK);
+            prefs.edit().putBoolean("background_pip_defaulted", true).apply();
         }
     }
 

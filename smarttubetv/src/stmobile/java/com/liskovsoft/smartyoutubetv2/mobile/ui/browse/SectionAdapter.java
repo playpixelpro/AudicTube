@@ -1,6 +1,7 @@
 package com.liskovsoft.smartyoutubetv2.mobile.ui.browse;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,6 +108,9 @@ class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.ViewHolder> {
 
         if (section.getResId() > 0) {
             holder.icon.setImageResource(section.getResId());
+            holder.icon.setColorFilter(
+                    ContextCompat.getColor(holder.icon.getContext(), R.color.mobile_text_primary),
+                    PorterDuff.Mode.SRC_IN);
             holder.icon.setVisibility(View.VISIBLE);
         } else {
             holder.icon.setVisibility(View.INVISIBLE);

@@ -39,6 +39,14 @@
     <!-- GitHub releases LIST endpoint (not /releases/latest, which hides prereleases/betas). -->
     <string name="mobile_about_url_releases_api" translatable="false">https://api.github.com/repos/playpixelpro/AudicTube/releases?per_page=30</string>
 
+    <!-- Support / funding -->
+    <string name="mobile_about_support_title">Support the project</string>
+    <string name="mobile_about_support_desc">If you enjoy AudicTube, consider supporting the developer! Your contributions help keep development active and bring new features to life.</string>
+    <string name="mobile_about_support_kofi">☕ Support on Ko‑fi</string>
+    <string name="mobile_about_support_buymeacoffee">☕ Buy me a coffee</string>
+    <string name="mobile_about_url_kofi" translatable="false">https://ko-fi.com/playpixelpro</string>
+    <string name="mobile_about_url_buymeacoffee" translatable="false">https://buymeacoffee.com/playpixelpro</string>
+
     <!-- Theme picker (light/dark) -->
     <string name="mobile_theme_title">Theme</string>
     <string name="mobile_theme_option_system">Follow system</string>

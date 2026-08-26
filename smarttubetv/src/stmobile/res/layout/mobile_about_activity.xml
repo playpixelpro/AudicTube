@@ -50,7 +50,7 @@
                 android:layout_height="84dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="12dp"
-                android:src="@drawable/ic_brand_logo"
+                android:src="@drawable/brand_logo"
                 android:contentDescription="@string/app_name" />
 
             <TextView
@@ -93,6 +93,74 @@
                 android:textColor="@color/brand_accent"
                 android:textSize="15sp"
                 android:background="?android:attr/selectableItemBackground" />
+
+            <!-- Support section -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="@color/mobile_divider" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:text="@string/mobile_about_support_title"
+                android:textColor="@color/mobile_text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:text="@string/mobile_about_support_desc"
+                android:textColor="@color/mobile_text_secondary"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.2" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/btn_support_kofi"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:gravity="center"
+                    android:text="@string/mobile_about_support_kofi"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/support_button_kofi"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp" />
+
+                <TextView
+                    android:id="@+id/btn_support_buymeacoffee"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:gravity="center"
+                    android:text="@string/mobile_about_support_buymeacoffee"
+                    android:textColor="#FF000000"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/support_button_bmc"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

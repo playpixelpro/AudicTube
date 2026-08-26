@@ -1,0 +1,124 @@
+name: Build Signed Release APK (Mobile Only)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version name for the APK (e.g. 1.0.0). Leave empty to use tag name or commit hash.'
+        required: false
+        type: string
+      version_code:
+        description: 'Version code for the APK (integer). Leave empty to use the default from build.gradle.'
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Configure Build Signing
+        run: |
+          echo "storePassword=${{ secrets.KEY_STORE_PASSWORD }}" > keystore.properties
+          echo "keyAlias=${{ secrets.ALIAS }}" >> keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+          echo "storeFile=${{ github.workspace }}/key.jks" >> keystore.properties
+          echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > ${{ github.workspace }}/key.jks
+
+      - name: Create local.properties
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - name: Grant Gradle permissions
+        run: chmod +x gradlew
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          elif [[ -n "${{ inputs.version }}" ]]; then
+            VERSION="${{ inputs.version }}"
+          else
+            SHORT_SHA="${GITHUB_SHA::7}"
+            VERSION="nightly-${SHORT_SHA}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Resolved version: ${VERSION}"
+
+      - name: Build stmobile release APK
+        run: |
+          ./gradlew :smarttubetv:assembleStmobileRelease \
+            -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g" \
+            -PversionName="${{ steps.version.outputs.version }}" \
+            ${{ inputs.version_code != '' && format('-PversionCode={0}', inputs.version_code) || '' }} \
+            --no-daemon -x lint
+        env:
+          STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: audictube-release-apks
+          path: |
+            smarttubetv/build/outputs/apk/stmobile/release/*.apk
+
+      - name: Generate changelog.json from CHANGELOG.md
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Extracting changelog for version: $VERSION"
+          awk -v ver="$VERSION" '/^## /{if(p){exit} if($0~"## "ver){p=1;next}} p' CHANGELOG.md > /tmp/changelog_items.txt
+
+          # Build JSON array from bullet points
+          echo '{"changelog":[{"title":"","items":[' > /tmp/changelog.json
+          first=true
+          while IFS= read -r line; do
+            trimmed=$(echo "$line" | sed 's/^[[:space:]]*//')
+            if echo "$trimmed" | grep -q '^- '; then
+              item=$(echo "$trimmed" | sed 's/^- //' | sed 's/"/\\"/g')
+              if [ "$first" = true ]; then
+                printf '"%s"' "$item" >> /tmp/changelog.json
+                first=false
+              else
+                printf ',"%s"' "$item" >> /tmp/changelog.json
+              fi
+            fi
+          done < /tmp/changelog_items.txt
+          echo ']}]}' >> /tmp/changelog.json
+
+          # Validate JSON
+          cat /tmp/changelog.json | python3 -m json.tool > /dev/null && echo "JSON valid" || echo "JSON invalid"
+          cp /tmp/changelog.json ./changelog.json
+          echo "Generated changelog.json:"
+          cat ./changelog.json
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ github.event_name == 'push' && github.ref_name || format('v{0}', steps.version.outputs.version) }}
+          name: AudicTube v${{ steps.version.outputs.version }}
+          files: |
+            smarttubetv/build/outputs/apk/stmobile/release/*.apk
+            changelog.json
+          generate_release_notes: true

@@ -1,19 +1,19 @@
-# Privacy Policy — SmarterTube
+# Privacy Policy — AudicTube
 
 **Package ID:** `com.playpixelpro.audictube`  
-**Last updated:** May 2026
+**Last updated:** August 2026
 
 ---
 
 ## What this app is
 
-SmarterTube is a phone and tablet client for YouTube. It is a fork of [SmartTube](https://github.com/yuliskov/SmartTube) by yuliskov; the YouTube client engine is upstream's code, merged unchanged. This policy covers the SmarterTube fork (`com.playpixelpro.audictube`) only — not the upstream SmartTube TV build.
+AudicTube is a phone and tablet client for YouTube. It is a fork of [SmarterTube](https://github.com/CodeSculptor/SmarterTube) (by CodeSculptor), which is itself a fork of [SmartTube](https://github.com/yuliskov/SmartTube) (by yuliskov); the YouTube client engine is upstream's code, merged unchanged. This policy covers the AudicTube fork (`com.playpixelpro.audictube`) only — not the upstream SmartTube TV build or the SmarterTube fork.
 
 ---
 
 ## Data the developer collects
 
-**None.** SmarterTube has no developer-controlled backend, no telemetry, no analytics, no crash reporting, and no self-update mechanism. The developer receives no data about you or your usage.
+**None.** AudicTube has no developer-controlled backend, no telemetry, no analytics, no crash reporting, and no self-update mechanism. The developer receives no data about you or your usage.
 
 ---
 
@@ -29,7 +29,7 @@ Video content, metadata, search results, channel data, and account information a
 When enabled, the following features contact third-party APIs with the ID of the video you are watching. No account tokens or personal identifiers are included in these requests.
 
 | Feature | Service | Data sent |
-|---|---|---|
+|---------|---------|-----------|
 | SponsorBlock | [sponsor.ajay.app](https://sponsor.ajay.app) | Video ID |
 | Return YouTube Dislike | [returnyoutubedislike.com](https://returnyoutubedislike.com) | Video ID |
 | DeArrow | [dearrow.ajay.app](https://dearrow.ajay.app) | Video ID |
@@ -46,4 +46,4 @@ Because the developer collects no data, there is nothing to provide, correct, or
 
 ## Contact
 
-Open an issue at [github.com/CodeSculptor/SmarterTube](https://github.com/CodeSculptor/SmarterTube/issues).
+Open an issue at [github.com/playpixelpro/AudicTube](https://github.com/playpixelpro/AudicTube/issues).
