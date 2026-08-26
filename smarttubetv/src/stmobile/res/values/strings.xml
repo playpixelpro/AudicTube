@@ -22,7 +22,7 @@
     <string name="mobile_about_drawer_entry">About AudicTube</string>
     <string name="mobile_about_tagline">A phone &amp; tablet YouTube client</string>
     <string name="mobile_about_version">Version %1$s</string>
-    <string name="mobile_about_body">AudicTube is a phone and tablet YouTube client, forked from SmartTube by yuliskov. The YouTube client code is upstream\'s work, merged from upstream on every release. This fork adds the phone/tablet UI on top.\n\nLicensed under MIT, same as upstream.</string>
+    <string name="mobile_about_body">AudicTube is a fork of CodeSculptor/SmarterTube (which is itself a fork of yuliskov/SmartTube — an Android TV YouTube client). The upstream SmartTube is TV-only by design; SmarterTube added a native phone/tablet interface on top of its engine. AudicTube builds on that work with further mobile-first enhancements, refinements, and a fresh identity.\n\nAudicTube is not a patched YouTube APK and not a wrapper — it is a native Android app built on SmartTube\'s YouTube client engine.</string>
     <string name="mobile_about_link_upstream">Upstream: github.com/yuliskov/SmartTube</string>
     <string name="mobile_about_link_fork">Fork: github.com/playpixelpro/AudicTube</string>
     <string name="mobile_about_url_upstream" translatable="false">https://github.com/yuliskov/SmartTube</string>

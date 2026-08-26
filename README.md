@@ -1,4 +1,8 @@
-# 🎵 AudicTube
+<p align="center">
+  <img src="images/audictube-logo-2.png" width="120" alt="AudicTube Logo"/>
+</p>
+
+<h1 align="center">AudicTube</h1>
 
 **A phone and tablet YouTube client for Android.**  
 
