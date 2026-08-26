@@ -250,9 +250,9 @@ android {
             targetSdkVersion 33
             // Phone-port versioning.
             def overrideVersion = project.findProperty('versionName')
-            versionName overrideVersion ? overrideVersion.startsWith('v') ? overrideVersion : "v${overrideVersion}" : "v1.0.1"
+            versionName overrideVersion ? overrideVersion.startsWith('v') ? overrideVersion : "v${overrideVersion}" : "v1.0.2"
             def overrideCode = project.findProperty('versionCode')
-            versionCode overrideCode ? overrideCode.toInteger() : 2
+            versionCode overrideCode ? overrideCode.toInteger() : 3
         }
     }
 }
