@@ -116,6 +116,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
         with:
+          token: ${{ secrets.RELEASE_PAT }}
           tag_name: ${{ github.event_name == 'push' && github.ref_name || format('v{0}', steps.version.outputs.version) }}
           name: AudicTube v${{ steps.version.outputs.version }}
           files: |

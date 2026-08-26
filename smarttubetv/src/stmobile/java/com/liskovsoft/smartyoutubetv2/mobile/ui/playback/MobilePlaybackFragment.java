@@ -530,26 +530,51 @@ public class MobilePlaybackFragment extends PlaybackFragment {
             return handleShortsTouchEvent(event);
         }
 
-        // Non-Shorts: toggle controls on tap.
+        // Non-Shorts: single tap toggles the controls. A tap on the control bar
+        // itself (buttons, seek bar, time, dock) must reach the buttons — especially
+        // the fullscreen toggle — so only empty-video taps hide the overlay.
         if (event.getY() > playerView.getBottom()) return false;
 
-        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-            if (isOverlayShown()) {
-                // Controls are showing — hide them immediately
-                hideControlsOverlay(true);
-                return true;
+        if (isOverlayShown()) {
+            // Taps on the visible control bar pass through to the underlying buttons.
+            if (isTapOnControlBar(event)) {
+                return false;
             }
-            // Controls are hidden: let the double-tap adapter + tickle handle it
-            onDispatchTouchEvent(event);
+            // Tap on empty video area hides the controls immediately.
+            if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                hideControlsOverlay(true);
+            }
             return true;
         }
 
-        // Let DOWN/MOVE/CANCEL propagate for double-tap detection, but consume
-        // so they don't hit invisible control buttons behind the faded overlay.
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            onDispatchTouchEvent(event);
-        }
+        // Controls are hidden: single tap shows them, double-tap seeks.
+        onDispatchTouchEvent(event);
         return true;
+    }
+
+    /**
+     * True if the touch falls on the visible player control bar (the bottom transport row:
+     * play/pause, previous/next, seek bar, time labels and the secondary actions dock).
+     * Controls overlapping the video have to stay tappable (e.g. the fullscreen button),
+     * otherwise the tap-to-hide logic would swallow their clicks.
+     */
+    private boolean isTapOnControlBar(MotionEvent event) {
+        View playerView = getView();
+        if (playerView == null) return false;
+
+        View transportRow = playerView.findViewById(R.id.transport_row);
+        if (transportRow == null || transportRow.getVisibility() != View.VISIBLE) {
+            return false;
+        }
+
+        int[] location = new int[2];
+        transportRow.getLocationOnScreen(location);
+
+        float x = event.getRawX();
+        float y = event.getRawY();
+
+        return x >= location[0] && x <= location[0] + transportRow.getWidth()
+                && y >= location[1] && y <= location[1] + transportRow.getHeight();
     }
 
     private boolean handleShortsTouchEvent(MotionEvent event) {
