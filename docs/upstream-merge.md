@@ -89,10 +89,16 @@ If the build step fails:
 
 ## When to bump the version
 
-Each upstream version bump (`31.70` → `31.71`) is a fork release boundary. Convention:
+AudicTube uses pure **Semantic Versioning** (semver, [conventionalcommits.org](https://www.conventionalcommits.org/en/v1.0.0/)) for the phone build. The upstream SmartTube version is **not** part of the product version anymore — it's recorded in release notes and the `Merge upstream SmartTube X.YY (sha)` git history instead.
 
-- `versionCode` — increment **monotonically by 1** past the last shipped fork release; it is *independent* of the upstream code. (The old `upstream × 10` rule was abandoned at 31.77, when upstream's own `versionCode` stopped tracking its `versionName`. Shipped so far: alpha1–4 = 23701–23704, beta1 = 23705, 1.0 = 23706, 1.1 = 23707 — so the next release is **23708**.)
-- `versionName` = `<upstream>-mobile-<maturity>` (e.g. `31.90-mobile-1.1`; earlier `31.77-mobile-beta1`). Maturity is now a semantic `<major>.<minor>`, not `alpha`/`beta`.
+Convention:
+
+- `versionName` — follows semver, e.g. `v1.0.0`, `v1.1.0`, `v1.0.1`, or prereleases `v1.1.0-beta.1` / `v1.2.0-rc.1`. Bump:
+  - **MAJOR** for breaking changes,
+  - **MINOR** for user-visible features,
+  - **PATCH** for bug fixes.
+  - Defaults to `v1.0.0`; override with `-PversionName=2.0.0` (the `v` prefix is added automatically if missing).
+- `versionCode` — must be **strictly increasing** across releases (Android requires this for in-place upgrades). Defaults to `1`; override with `-PversionCode=N`. Increment by 1 for each release.
 - Bump in the `stmobile` flavor block of `smarttubetv/build.gradle` only — never in `defaultConfig` (that's upstream's).
 
-After a clean merge and bump: `assembleStmobileRelease`, tag, then `gh release create` with the 4 ABI APKs. Use `--prerelease` **only** for alpha/beta builds; drop it for stable `1.x` releases.
+After a clean merge and bump: `assembleStmobileRelease` (or push a `v*` tag to let the CI workflow build it), then publish the release. The GitHub Actions workflow (`build-mobile-release.yml`) builds the signed APKs and creates the GitHub Release automatically. Use `--prerelease` only for prerelease versions (`-beta`, `-rc`); drop it for stable `1.x` releases.
