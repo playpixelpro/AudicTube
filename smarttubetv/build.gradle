@@ -13,12 +13,12 @@ buildscript {
 
         // Check that you have the Google Services Gradle plugin v4.3.2 or later
         // (if not, add it).
-        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.google.gms:google-services:4.5.0'
 
         // Add the Crashlytics Gradle plugin.
         // https://firebase.google.com/docs/crashlytics/get-started?platform=android
         // https://firebase.google.com/docs/android/setup
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
     }
 }
 
@@ -47,20 +47,20 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    compileSdkVersion project.properties.compileSdkVersion
-    buildToolsVersion project.properties.buildToolsVersion
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
     testOptions.unitTests.includeAndroidResources = true
     // Non-Robolectric JVM unit tests (e.g. the stmobile update/* suite) call android.util.Log,
     // whose android.jar stub otherwise throws "Method d/e not mocked". Return defaults so plain
     // logic tests run; Robolectric tests are unaffected (they shadow android with real impls).
     testOptions.unitTests.returnDefaultValues = true
-    ndkVersion "21.0.6113669" // reduce size of the *.so files (stripping debug symbols)
+    ndkVersion "26.3.11579262" // reduce size of the *.so files (stripping debug symbols)
     
     defaultConfig {
         // values linked with applicationId: searchable.searchSuggestAuthority, searchable.searchSuggestIntentData, VideoContract.CONTENT_AUTHORITY
         applicationId "app.smarttube"
-        minSdkVersion project.properties.minSdkVersion
-        targetSdkVersion project.properties.targetSdkVersion
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
         versionCode 2413
         versionName "32.23"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -136,12 +136,9 @@ android {
 
             def newApkName
             if (flavor == "mobile") {
-                // SmarterTube asset naming (docs/VERSIONING.md, docs/UPDATER_COMPATIBILITY.md):
-                //   SmarterTube-v0.4.2-beta.1-st31.94-<arch>.apk
-                // The updater's ApkAssetSelector matches the <arch> token; '+' is not filename-safe
-                // so the "+st" metadata separator becomes "-st".
-                def assetVersion = version.replace("+", "-")
-                newApkName = sprintf("SmarterTube-%s-%s.apk", [assetVersion, arch])
+                // AudicTube asset naming (docs/VERSIONING.md, docs/UPDATER_COMPATIBILITY.md):
+                //   AudicTube-v1.0.0-<arch>.apk
+                newApkName = sprintf("AudicTube-%s-%s.apk", [version, arch])
             } else {
                 // Upstream TV flavors keep their existing naming.
                 newApkName = sprintf("%s_%s_%s_%s.apk", [project, flavor, version, arch])
@@ -163,6 +160,52 @@ android {
         // exclude "lib/armeabi/**"
     }
 
+    // 16KB page alignment fix for arm64-v8a .so files (Android 15+ compatibility)
+    // The ELF alignment script adjusts PT_LOAD segment offset alignment and
+    // PT_GNU_RELRO segment page boundaries to 16KB (0x4000).
+    // This runs after native libs are merged, before they are packaged into the APK.
+    applicationVariants.configureEach { variant ->
+        def variantName = variant.name.capitalize() // e.g. "StmobileDebug"
+        def mergeTaskName = "merge${variantName}NativeLibs"
+        def mergeTask = tasks.findByName(mergeTaskName)
+        if (mergeTask != null) {
+            def alignTask = tasks.register("alignElf16kb${variantName}") {
+                dependsOn mergeTask
+                doLast {
+                    def nativeLibDir = file("${buildDir}/intermediates/merged_native_libs/${variant.dirName}/out")
+                    if (nativeLibDir.exists()) {
+                        def arm64Dir = file("${nativeLibDir}/lib/arm64-v8a")
+                        if (arm64Dir.exists()) {
+                            def script = file("${rootDir}/scripts/align_elf_16kb.py")
+                            if (!script.exists()) {
+                                throw new GradleException("ELF alignment script not found at ${script}")
+                            }
+                            arm64Dir.eachFileRecurse(groovy.io.FileType.FILES) { soFile ->
+                                if (soFile.name.endsWith('.so')) {
+                                    def cmd = ["py", "-3", script.absolutePath, soFile.absolutePath]
+                                    def proc = cmd.execute()
+                                    def out = new StringBuffer()
+                                    def err = new StringBuffer()
+                                    proc.consumeProcessOutput(out, err)
+                                    proc.waitFor()
+                                    if (proc.exitValue() != 0) {
+                                        println "WARN: align_elf_16kb failed on ${soFile.name}: ${err}"
+                                    } else {
+                                        println "16KB align: ${soFile.name}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            def packageTask = tasks.findByName("package${variantName}")
+            if (packageTask != null) {
+                packageTask.dependsOn alignTask
+            }
+        }
+    }
+
     lintOptions {
         abortOnError true
         //checkReleaseBuilds false // fix for ClassNotFoundException: com.android.tools.lint.client.api.Vendor
@@ -176,16 +219,16 @@ android {
     productFlavors {
         stbeta {
             applicationId "org.smarttube.beta"
-            targetSdkVersion project.properties.compileSdkVersion
+            targetSdkVersion project.ext.compileSdkVersion
         }
         ststable {
             applicationId "org.smarttube.stable"
-            targetSdkVersion project.properties.compileSdkVersion
+            targetSdkVersion project.ext.compileSdkVersion
         }
         stfdroid {
             applicationId "app.smarttube.fdroid"
             minSdkVersion 21
-            targetSdkVersion project.properties.compileSdkVersion
+            targetSdkVersion project.ext.compileSdkVersion
         }
         stmobile {
             // Phone/portrait build. Co-installable alongside the TV build.
@@ -197,7 +240,7 @@ android {
             // qualifier (an Android package is implicitly the app; tablets included).
             // Renamed from the legacy app.smarttube.mobile in the 2026-06 beta — a one-time
             // clean break (the old id does NOT upgrade in place; see docs/upstream-merge.md).
-            applicationId "com.codesculptor.smartertube"
+            applicationId "com.playpixelpro.audictube"
             // Fall back to ststable for dependency modules that don't
             // declare an stmobile flavor.
             matchingFallbacks = ['ststable']
@@ -205,45 +248,9 @@ android {
             // 33 stops modern phones showing the "built for an older version
             // of Android" warning.
             targetSdkVersion 33
-            // Phone-port versioning. Lives in the flavor (not defaultConfig) so
-            // upstream merges don't conflict on versionCode/versionName lines.
-            //
-            // versionName follows the SmarterTube beta-reset scheme (docs/VERSIONING.md):
-            //   v<app-semver>[-<channel>.<n>]+st<upstream-base>
-            // e.g. v0.4.0-beta.1+st31.93 — the SmarterTube product version is tracked
-            // separately from the upstream SmartTube base (+st31.93). The previous
-            // "<upstream>-mobile-<x.y>" names (e.g. 31.93-mobile-1.4) are LEGACY; the
-            // updater recognises and supersedes them (see SmarterTubeVersion).
-            //
-            // versionCode is INDEPENDENT of upstream's code and MUST increase by 1 past
-            // the last shipped fork release (Android rejects a lower code for in-place
-            // upgrade); this is what makes a beta-reset build supersede the legacy ones.
-            // History: alpha1-4 = 23701-23704, beta1 = 23705, 1.0 = 23706, 1.1 = 23707,
-            // 1.2 = 23708, 1.3 = 23709, 1.4 (31.93-mobile-1.4) = 23710.
-            // 23711 = v0.4.0-beta.1+st31.93 (Gate A beta reset). Gate B Shorts = 23712.
-            // 23713 = v0.4.2-beta.1+st31.94 (Gate C: upstream 31.94 sync + Shorts loop fix).
-            // 23714 = v0.4.2-beta.2+st31.94 (lockscreen + background audio default).
-            // 23715 = v0.4.2-beta.3+st31.94 (subscribe/unsubscribe + notification bell on channel page).
-            // 23716 = v0.4.2-beta.4+st31.94 (portrait channel tap + like/dislike buttons).
-            // 23717 = v0.4.2-beta.5+st31.94 (nav bar + back button on all portrait/landscape player pages).
-            // 23718 = v0.4.2-beta.6+st31.94 (channel avatar + subscriber header on channel page;
-            //         portrait player channel avatar + restyled native like/dislike + larger meta text;
-            //         Shorts channel button shows avatar; fix stale player controls returning from channel page).
-            // 23719 = v0.4.2-beta.7+st31.94 (native channel content tabs Videos/Shorts/Live/Playlists;
-            //         Back in the phone player stops the video and leaves (#23);
-            //         keep channel list after returning from a channel page (#22)).
-            // 23720 = v0.4.2-beta.8+st31.94 (Shorts seek bar visible + auto-hide (#28);
-            //         settings dialog presents as a bottom-sheet card over the player;
-            //         Back on player no longer re-opens a just-closed settings dialog).
-            // 23721 = v0.5.0-beta.1+st31.94 (first release under package com.codesculptor.smartertube;
-            //         pop-up (PIP) shows the video + channel back-stack fix (#33, #24)).
-            // 23722 = v0.5.0-beta.2+st32.05 (upstream SmartTube 32.05 sync;
-            //         video duration badge on browse/up-next thumbnails).
-            // 23723 = v0.5.0-beta.3+st32.10 (upstream SmartTube 32.10 sync;
-            //         stop audio when the pop-up (PIP) window is closed (#35)).
-            // 23724 = v0.5.0-beta.4+st32.23 (upstream SmartTube 32.23 sync).
-            versionCode 23724
-            versionName "v0.5.0-beta.4+st32.23"
+            // Phone-port versioning.
+            versionCode 1
+            versionName "v1.0.0"
         }
     }
 }

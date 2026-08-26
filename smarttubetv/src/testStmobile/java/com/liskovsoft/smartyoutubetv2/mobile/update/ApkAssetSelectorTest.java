@@ -16,10 +16,10 @@ import java.util.List;
 public class ApkAssetSelectorTest {
 
     private static final List<String> FULL_SET = Arrays.asList(
-            "SmarterTube-v0.4.0-beta.1-st31.93-universal.apk",
-            "SmarterTube-v0.4.0-beta.1-st31.93-arm64-v8a.apk",
-            "SmarterTube-v0.4.0-beta.1-st31.93-armeabi-v7a.apk",
-            "SmarterTube-v0.4.0-beta.1-st31.93-x86.apk");
+            "AudicTube-v0.4.0-beta.1-st31.93-universal.apk",
+            "AudicTube-v0.4.0-beta.1-st31.93-arm64-v8a.apk",
+            "AudicTube-v0.4.0-beta.1-st31.93-armeabi-v7a.apk",
+            "AudicTube-v0.4.0-beta.1-st31.93-x86.apk");
 
     @Test
     public void picksExactAbiWhenPresent() {

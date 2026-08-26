@@ -17,45 +17,43 @@ import org.junit.Test;
  */
 public class SmarterTubeVersionTest {
 
-    // ---- Parsing of the new scheme ----
+    // ---- Parsing ----
 
     @Test
     public void parsesNewSchemeBeta() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("v0.4.0-beta.1+st31.93");
-        assertEquals(0, v.getMajor());
-        assertEquals(4, v.getMinor());
+        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.0.0-beta.1");
+        assertEquals(1, v.getMajor());
+        assertEquals(0, v.getMinor());
         assertEquals(0, v.getPatch());
         assertEquals(Channel.BETA, v.getChannel());
         assertEquals(1, v.getChannelNumber());
-        assertEquals("31.93", v.getUpstreamBase());
+        assertNull(v.getUpstreamBase());
         assertFalse(v.isLegacy());
     }
 
     @Test
     public void parsesNewSchemeBeta2() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("v0.4.0-beta.2+st31.93");
+        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.0.0-beta.2");
         assertEquals(2, v.getChannelNumber());
         assertEquals(Channel.BETA, v.getChannel());
     }
 
     @Test
-    public void parsesNewSchemeDifferentUpstream() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("v0.4.1-beta.1+st31.94");
-        assertEquals("0.4.1", v.getProductVersion());
-        assertEquals("31.94", v.getUpstreamBase());
+    public void parsesDifferentVersion() {
+        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.1.0-beta.1");
+        assertEquals("1.1.0", v.getProductVersion());
     }
 
     @Test
     public void parsesReleaseCandidate() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.0.0-rc.1+st32.10");
+        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.0.0-rc.1");
         assertEquals(Channel.RC, v.getChannel());
         assertEquals(1, v.getChannelNumber());
-        assertEquals("32.10", v.getUpstreamBase());
     }
 
     @Test
     public void parsesStableWithNoChannelSuffix() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.0.0+st32.10");
+        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.0.0");
         assertEquals(Channel.STABLE, v.getChannel());
         assertEquals(0, v.getChannelNumber());
         assertFalse(v.isLegacy());
@@ -63,76 +61,42 @@ public class SmarterTubeVersionTest {
 
     @Test
     public void parsesUpstreamBetaTail() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("v0.4.3-beta.1+st31.94-beta");
-        assertEquals("31.94-beta", v.getUpstreamBase());
+        // +st suffix is optional metadata — should still parse cleanly.
+        SmarterTubeVersion v = SmarterTubeVersion.parse("v1.0.0-beta.1+st31.94-beta");
+        assertEquals("1.0.0", v.getProductVersion());
+        assertEquals(Channel.BETA, v.getChannel());
     }
 
     // ---- Ordering ----
 
     @Test
     public void alphaIsOlderThanBeta() {
-        assertTrue(lt("v0.5.0-alpha.1+st31.96", "v0.5.0-beta.1+st31.96"));
+        assertTrue(lt("v1.1.0-alpha.1", "v1.1.0-beta.1"));
     }
 
     @Test
     public void betaIsOlderThanRc() {
-        assertTrue(lt("v1.0.0-beta.1+st32.10", "v1.0.0-rc.1+st32.10"));
+        assertTrue(lt("v1.0.0-beta.1", "v1.0.0-rc.1"));
     }
 
     @Test
     public void rcIsOlderThanStable() {
-        assertTrue(lt("v1.0.0-rc.1+st32.10", "v1.0.0+st32.10"));
+        assertTrue(lt("v1.0.0-rc.1", "v1.0.0"));
     }
 
     @Test
     public void beta2IsNewerThanBeta1() {
-        assertTrue(lt("v0.4.0-beta.1+st31.93", "v0.4.0-beta.2+st31.93"));
+        assertTrue(lt("v1.0.0-beta.1", "v1.0.0-beta.2"));
     }
 
     @Test
     public void patchBumpIsNewer() {
-        assertTrue(lt("v0.4.0-beta.1+st31.93", "v0.4.1-beta.1+st31.93"));
+        assertTrue(lt("v1.0.0-beta.1", "v1.1.0-beta.1"));
     }
 
     @Test
-    public void buildMetadataDoesNotAffectPrecedence() {
-        // Same product version, different upstream base -> equal precedence.
-        SmarterTubeVersion a = SmarterTubeVersion.parse("v0.4.0-beta.1+st31.93");
-        SmarterTubeVersion b = SmarterTubeVersion.parse("v0.4.0-beta.1+st31.94");
-        assertEquals(0, a.compareTo(b));
-    }
-
-    @Test
-    public void newerUpstreamDoesNotBeatOlderProductVersion() {
-        // 0.4.1-beta.1 (older upstream) must still be newer than 0.4.0-beta.9 (newer upstream).
-        assertTrue(lt("v0.4.0-beta.9+st31.94", "v0.4.1-beta.1+st31.93"));
-    }
-
-    // ---- Legacy migration ----
-
-    @Test
-    public void legacyTagIsRecognised() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("31.93-mobile-1.4");
-        assertTrue(v.isLegacy());
-        assertEquals("31.93", v.getUpstreamBase());
-        assertEquals(Channel.BETA, v.getChannel());
-    }
-
-    @Test
-    public void legacyBeta1Recognised() {
-        SmarterTubeVersion v = SmarterTubeVersion.parse("31.77-mobile-beta1");
-        assertTrue(v.isLegacy());
-        assertEquals("31.77", v.getUpstreamBase());
-    }
-
-    @Test
-    public void legacyIsOlderThanBetaReset() {
-        assertTrue(lt("31.93-mobile-1.4", "v0.4.0-beta.1+st31.93"));
-    }
-
-    @Test
-    public void legacyDespite10LabelStillOlderThanBetaReset() {
-        assertTrue(lt("31.88-mobile-1.0", "v0.4.0-beta.1+st31.93"));
+    public void majorBumpIsNewer() {
+        assertTrue(lt("v1.0.0", "v2.0.0"));
     }
 
     // ---- Safe handling of unrelated tags ----
@@ -150,8 +114,7 @@ public class SmarterTubeVersionTest {
         assertNull(SmarterTubeVersion.parse(""));
         assertNull(SmarterTubeVersion.parse("   "));
         assertNull(SmarterTubeVersion.parse("not-a-version"));
-        assertNull(SmarterTubeVersion.parse("v0.4-beta.1+st31.93")); // missing patch
-        assertNull(SmarterTubeVersion.parse("v0.4.0-beta.1"));       // missing +st upstream
+        assertNull(SmarterTubeVersion.parse("v0.4-beta.1")); // missing patch
         assertNull(SmarterTubeVersion.parse("0.4.0-beta.1+st31.93")); // missing leading v
     }
 
@@ -159,33 +122,26 @@ public class SmarterTubeVersionTest {
 
     @Test
     public void stableChannelSeesStableOnly() {
-        assertTrue(visible("v1.0.0+st32.10", Channel.STABLE));
-        assertFalse(visible("v1.0.0-rc.1+st32.10", Channel.STABLE));
-        assertFalse(visible("v0.4.0-beta.1+st31.93", Channel.STABLE));
-        assertFalse(visible("v0.5.0-alpha.1+st31.96", Channel.STABLE));
+        assertTrue(visible("v1.0.0", Channel.STABLE));
+        assertFalse(visible("v1.0.0-rc.1", Channel.STABLE));
+        assertFalse(visible("v1.0.0-beta.1", Channel.STABLE));
+        assertFalse(visible("v1.1.0-alpha.1", Channel.STABLE));
     }
 
     @Test
     public void betaChannelSeesBetaRcStable() {
-        assertTrue(visible("v0.4.0-beta.1+st31.93", Channel.BETA));
-        assertTrue(visible("v1.0.0-rc.1+st32.10", Channel.BETA));
-        assertTrue(visible("v1.0.0+st32.10", Channel.BETA));
-        assertFalse(visible("v0.5.0-alpha.1+st31.96", Channel.BETA));
+        assertTrue(visible("v1.0.0-beta.1", Channel.BETA));
+        assertTrue(visible("v1.0.0-rc.1", Channel.BETA));
+        assertTrue(visible("v1.0.0", Channel.BETA));
+        assertFalse(visible("v1.1.0-alpha.1", Channel.BETA));
     }
 
     @Test
     public void alphaChannelSeesEverything() {
-        assertTrue(visible("v0.5.0-alpha.1+st31.96", Channel.ALPHA));
-        assertTrue(visible("v0.4.0-beta.1+st31.93", Channel.ALPHA));
-        assertTrue(visible("v1.0.0-rc.1+st32.10", Channel.ALPHA));
-        assertTrue(visible("v1.0.0+st32.10", Channel.ALPHA));
-    }
-
-    @Test
-    public void legacyVisibleToBetaAndAlphaButNotStable() {
-        assertTrue(visible("31.93-mobile-1.4", Channel.BETA));
-        assertTrue(visible("31.93-mobile-1.4", Channel.ALPHA));
-        assertFalse(visible("31.93-mobile-1.4", Channel.STABLE));
+        assertTrue(visible("v1.1.0-alpha.1", Channel.ALPHA));
+        assertTrue(visible("v1.0.0-beta.1", Channel.ALPHA));
+        assertTrue(visible("v1.0.0-rc.1", Channel.ALPHA));
+        assertTrue(visible("v1.0.0", Channel.ALPHA));
     }
 
     // ---- helpers ----

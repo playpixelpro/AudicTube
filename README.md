@@ -74,7 +74,7 @@ Pick the APK for your device:
 | `x86` | Emulators |
 | `universal` | Everything — larger file |
 
-SmarterTube installs as `com.codesculptor.smartertube` and is **co-installable** with the upstream SmartTube TV build (`app.smarttube`). They do not conflict.
+SmarterTube installs as `com.playpixelpro.audictube` and is **co-installable** with the upstream SmartTube TV build (`app.smarttube`). They do not conflict.
 
 > **Upgrading from a build before this rename?** Versions up to `v0.4.2-beta.8` shipped under the old package `app.smarttube.mobile`. The new id is a separate app, so it installs *alongside* the old one rather than upgrading it — uninstall the old SmarterTube after installing this one. Settings and signed-in accounts do not carry over and need to be set up again (one-time).
 

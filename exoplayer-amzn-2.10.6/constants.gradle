@@ -19,23 +19,23 @@ project.ext {
     // minSdkVersion = 16
     // targetSdkVersion = 28
     // compileSdkVersion = 28
-    minSdkVersion = project.properties.minSdkVersion
-    targetSdkVersion = project.properties.targetSdkVersion
-    compileSdkVersion = project.properties.compileSdkVersion
+    minSdkVersion = rootProject.ext.minSdkVersion
+    targetSdkVersion = rootProject.ext.targetSdkVersion
+    compileSdkVersion = rootProject.ext.compileSdkVersion
     // dexmakerVersion = '2.21.0' // absent in mavenCentral
     dexmakerVersion = '2.28.3'
     mockitoVersion = '2.25.0'
     // MOD: use versions from sharedutils
     // robolectricVersion = '4.2'
-    robolectricVersion = project.properties.robolectricVersion
-    annotationXVersion = project.properties.annotationXVersion
+    robolectricVersion = rootProject.ext.robolectricVersion
+    annotationXVersion = rootProject.ext.annotationXVersion
     autoValueVersion = '1.6'
     checkerframeworkVersion = '2.5.0'
     // MOD: use versions from sharedutils
     // androidXTestVersion = '1.1.0'
     //protobufVersion = '4.32.1'
     protobufVersion = '3.17.3' // the latest for Android 4
-    androidXTestVersion = project.properties.testXSupportVersion
+    androidXTestVersion = rootProject.ext.testXSupportVersion
     modulePrefix = ':'
     if (gradle.ext.has('exoplayerModulePrefix')) {
         modulePrefix += gradle.ext.exoplayerModulePrefix

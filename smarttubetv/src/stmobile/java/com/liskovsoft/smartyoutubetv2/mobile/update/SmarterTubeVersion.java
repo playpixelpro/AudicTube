@@ -4,23 +4,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parses and compares SmarterTube release identifiers.
+ * Parses and compares AudicTube release identifiers.
  *
- * <p>New scheme (see {@code docs/VERSIONING.md}):
- * <pre>v&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;[-&lt;channel&gt;.&lt;n&gt;]+st&lt;upstream&gt;</pre>
- * e.g. {@code v0.4.0-beta.1+st31.93}, {@code v1.0.0+st32.10}.
+ * <p>Format (pure semver with optional pre-release):
+ * <pre>v&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;[-&lt;channel&gt;.&lt;n&gt;]</pre>
+ * e.g. {@code v1.0.0}, {@code v1.1.0-beta.1}.
  *
- * <p>Legacy scheme (pre beta-reset):
- * <pre>&lt;upstream&gt;-mobile-&lt;suffix&gt;</pre>
- * e.g. {@code 31.93-mobile-1.4}, {@code 31.77-mobile-beta1}.
+ * <p>A {@code +st} upstream suffix may also appear for legacy compatibility but does not affect
+ * ordering (treated as build metadata per semver).
  *
- * <p>The SmarterTube product version (major/minor/patch + channel) is the ordering value.
- * The upstream SmartTube base ({@code +st...}) is metadata for display/diagnostics only and
- * never affects precedence. Legacy releases always sort older than any new-scheme release.
- *
- * <p>{@link #parse(String)} returns {@code null} for anything that is not a SmarterTube release
- * (e.g. an upstream SmartTube TV tag such as {@code 31.93}) or is malformed, so callers can
- * safely ignore it rather than crash.
+ * <p>{@link #parse(String)} returns {@code null} for anything that is not a recognised release
+ * identifier or is malformed, so callers can safely ignore it rather than crash.
  *
  * <p>Pure Java, no Android dependencies — unit-testable in isolation.
  */
@@ -52,12 +46,9 @@ public final class SmarterTubeVersion implements Comparable<SmarterTubeVersion> 
         }
     }
 
-    // v0.4.0-beta.1+st31.93  — channel suffix optional (absent => stable); upstream may carry a -beta tail.
+    // v1.0.0[-beta.1] — pure semver with optional pre-release channel; +st suffix is optional metadata.
     private static final Pattern NEW_SCHEME = Pattern.compile(
-            "^v(\\d+)\\.(\\d+)\\.(\\d+)(?:-(alpha|beta|rc)\\.(\\d+))?\\+st(\\d+\\.\\d+(?:-[A-Za-z0-9.-]+)?)$");
-    // 31.93-mobile-1.4 / 31.77-mobile-beta1
-    private static final Pattern LEGACY_SCHEME = Pattern.compile(
-            "^(\\d+\\.\\d+)-mobile-(.+)$");
+            "^v(\\d+)\\.(\\d+)\\.(\\d+)(?:-(alpha|beta|rc)\\.(\\d+))?(?:\\+st[\\w.-]+)?$");
 
     private final int major;
     private final int minor;
@@ -101,18 +92,10 @@ public final class SmarterTubeVersion implements Comparable<SmarterTubeVersion> 
             String channelId = m.group(4); // null => stable
             Channel channel = channelId == null ? Channel.STABLE : Channel.fromId(channelId);
             int channelNumber = channelId == null ? 0 : Integer.parseInt(m.group(5));
-            String upstream = m.group(6);
-            return new SmarterTubeVersion(major, minor, patch, channel, channelNumber, upstream, false, t);
+            return new SmarterTubeVersion(major, minor, patch, channel, channelNumber, null, false, t);
         }
 
-        Matcher lm = LEGACY_SCHEME.matcher(t);
-        if (lm.matches()) {
-            String upstream = lm.group(1); // e.g. "31.93"
-            // Every legacy "<x>-mobile-*" release was beta-quality regardless of any 1.x label.
-            return new SmarterTubeVersion(0, 0, 0, Channel.BETA, 0, upstream, true, t);
-        }
-
-        return null; // not a SmarterTube release / malformed -> ignore safely
+        return null; // not a recognised release / malformed -> ignore safely
     }
 
     public int getMajor() {
@@ -182,18 +165,6 @@ public final class SmarterTubeVersion implements Comparable<SmarterTubeVersion> 
 
     @Override
     public int compareTo(SmarterTubeVersion o) {
-        // Legacy releases are always older than any new-scheme release.
-        if (this.legacy != o.legacy) {
-            return this.legacy ? -1 : 1;
-        }
-        if (this.legacy) {
-            // Both legacy: best-effort ordering by upstream base then raw suffix. Not load-bearing
-            // (versionCode drives Android install ordering); only needs legacy < new-scheme.
-            int c = compareUpstream(this.upstreamBase, o.upstreamBase);
-            return c != 0 ? c : this.raw.compareTo(o.raw);
-        }
-        // Both new-scheme: compare SmarterTube product version only. Upstream base (+st..) is
-        // build metadata and MUST NOT affect precedence.
         int c = Integer.compare(major, o.major);
         if (c != 0) {
             return c;
@@ -211,35 +182,6 @@ public final class SmarterTubeVersion implements Comparable<SmarterTubeVersion> 
             return c;
         }
         return Integer.compare(channelNumber, o.channelNumber);
-    }
-
-    private static int compareUpstream(String a, String b) {
-        if (a == null && b == null) {
-            return 0;
-        }
-        if (a == null) {
-            return -1;
-        }
-        if (b == null) {
-            return 1;
-        }
-        String[] pa = a.split("[.-]");
-        String[] pb = b.split("[.-]");
-        int n = Math.min(pa.length, pb.length);
-        for (int i = 0; i < n; i++) {
-            try {
-                int c = Integer.compare(Integer.parseInt(pa[i]), Integer.parseInt(pb[i]));
-                if (c != 0) {
-                    return c;
-                }
-            } catch (NumberFormatException e) {
-                int c = pa[i].compareTo(pb[i]);
-                if (c != 0) {
-                    return c;
-                }
-            }
-        }
-        return Integer.compare(pa.length, pb.length);
     }
 
     @Override

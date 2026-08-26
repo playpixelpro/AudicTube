@@ -241,7 +241,7 @@ Example:
 ```json
 {
   "app": "SmarterTube",
-  "package": "com.codesculptor.smartertube",
+  "package": "com.playpixelpro.audictube",
   "version": "0.4.0-beta.1",
   "upstream": "31.93",
   "channel": "beta",

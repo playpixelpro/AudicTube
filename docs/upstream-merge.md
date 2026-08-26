@@ -31,7 +31,7 @@ Clean day-to-day upstream commits just auto-merge in the background; no notifica
 
 These are the only places where the fork touches upstream code. Every upstream merge has the potential to disturb them; `stmobile-validate.yml` greps for each one.
 
-1. **`smarttubetv/build.gradle`** — `stmobile` product flavor block. Sets an explicit `applicationId "com.codesculptor.smartertube"` (NOT a suffix on upstream's `app.smarttube`) and `matchingFallbacks ['ststable']`. If a merge removes the flavor block or changes the id, the APK ships under the wrong package ID. (Renamed from the legacy `app.smarttube.mobile` in the 2026-06 beta — a one-time clean break; the old id does not upgrade in place.)
+1. **`smarttubetv/build.gradle`** — `stmobile` product flavor block. Sets an explicit `applicationId "com.playpixelpro.audictube"` (NOT a suffix on upstream's `app.smarttube`) and `matchingFallbacks ['ststable']`. If a merge removes the flavor block or changes the id, the APK ships under the wrong package ID. (Renamed from the legacy `app.smarttube.mobile` in the 2026-06 beta — a one-time clean break; the old id does not upgrade in place.)
 
 2. **`common/build.gradle`** — matching `stmobile` flavor block with `matchingFallbacks ['ststable']` so submodules that don't know about `stmobile` fall back to `ststable`. Without this the build fails resolving common-module dependencies.
 
@@ -78,7 +78,7 @@ Then let `stmobile-validate` run, smoke-test, merge.
 
 If `stmobile-validate` flags a missing integration point on a PR:
 
-- **Point 1 missing** → restore the `stmobile { ... }` block in `smarttubetv/build.gradle` with `applicationId "com.codesculptor.smartertube"`, `matchingFallbacks ['ststable']`, the `targetSdkVersion`, and the `versionCode`/`versionName` lines (increment the fork `versionCode` monotonically; see [When to bump the version](#when-to-bump-the-version)).
+- **Point 1 missing** → restore the `stmobile { ... }` block in `smarttubetv/build.gradle` with `applicationId "com.playpixelpro.audictube"`, `matchingFallbacks ['ststable']`, the `targetSdkVersion`, and the `versionCode`/`versionName` lines (increment the fork `versionCode` monotonically; see [When to bump the version](#when-to-bump-the-version)).
 - **Point 2 missing** → restore the `stmobile { matchingFallbacks ['ststable'] }` block in `common/build.gradle`.
 - **Point 3 missing** → widen `MainApplication.setupViewManager()` from `private` back to `protected`.
 

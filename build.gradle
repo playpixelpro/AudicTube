@@ -53,7 +53,7 @@ allprojects {
         resolutionStrategy.force 'androidx.core:core:' + coreXVersion
         resolutionStrategy.force 'androidx.annotation:annotation:' + annotationXVersion
         // Downgrade Cronet version for cronet-okhttp
-        resolutionStrategy.force 'org.chromium.net:cronet-api:' + cronetApiVersion
+        //resolutionStrategy.force 'org.chromium.net:cronet-api:' + cronetApiVersion
         resolutionStrategy.force 'androidx.multidex:multidex:' + multiDexVersion
 
         // Replace with modded library (leanback-1.0.0)
@@ -66,5 +66,14 @@ allprojects {
         //     // substitute remote dependency with local module
         //     substitute module('androidx.leanback:leanback') using project(':leanback-1.0.0')
         // }
+    }
+}
+
+// Enable multi-dex for all library subprojects to fix androidTest dex overflow (64K method limit).
+subprojects {
+    afterEvaluate { sub ->
+        if (sub.plugins.hasPlugin('com.android.library')) {
+            sub.android.defaultConfig.multiDexEnabled = true
+        }
     }
 }

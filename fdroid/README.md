@@ -50,7 +50,7 @@ the fingerprint changes and every user must re-add the repo.
 
 ## What is committed vs generated
 
-- **Committed:** `config.yml` (no passwords), `metadata/com.codesculptor.smartertube.yml`,
+- **Committed:** `config.yml` (no passwords), `metadata/com.playpixelpro.audictube.yml`,
   `repo/icon.png`, this README.
 - **Gitignored / generated / secret:** `keystore.p12`, the APKs, and all generated index
   files (`index-*`, `entry-*`, `icons*/`, `archive/`). See the root `.gitignore`.

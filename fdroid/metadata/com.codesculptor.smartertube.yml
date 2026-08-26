@@ -20,7 +20,7 @@ Description: |-
 
   It is a companion to SmartTube, not a replacement: for Android TV boxes and
   sticks install upstream SmartTube. SmarterTube installs alongside the TV build
-  (package com.codesculptor.smartertube) and the two do not conflict.
+  (package com.playpixelpro.audictube) and the two do not conflict.
 
   Engine features inherited from upstream include SponsorBlock, Return YouTube
   Dislike, DeArrow, adjustable playback speed, up to 8K/60fps/HDR, no ads, and no

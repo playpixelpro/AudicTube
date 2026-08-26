@@ -11,7 +11,7 @@ Upstream SmartTube base: `__________`  Channel: `__________`
 
 - [ ] Fresh install works (no prior version present)
 - [ ] Upgrade from the previous SmarterTube release works (in-place, data preserved)
-- [ ] App ID is correct (`com.codesculptor.smartertube`) and co-installs with the upstream TV build
+- [ ] App ID is correct (`com.playpixelpro.audictube`) and co-installs with the upstream TV build
 - [ ] ABI-specific APK installs correctly (arm64-v8a / armeabi-v7a / x86)
 - [ ] Universal APK installs correctly
 

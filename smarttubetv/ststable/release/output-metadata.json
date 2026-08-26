@@ -1,0 +1,59 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "org.smarttube.stable",
+  "variantName": "ststableRelease",
+  "elements": [
+    {
+      "type": "UNIVERSAL",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 2413,
+      "versionName": "32.23",
+      "outputFile": "SmartTube_stable_32.23_universal.apk"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "arm64-v8a"
+        }
+      ],
+      "attributes": [],
+      "versionCode": 2413,
+      "versionName": "32.23",
+      "outputFile": "SmartTube_stable_32.23_arm64-v8a.apk"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "x86"
+        }
+      ],
+      "attributes": [],
+      "versionCode": 2413,
+      "versionName": "32.23",
+      "outputFile": "SmartTube_stable_32.23_x86.apk"
+    },
+    {
+      "type": "ONE_OF_MANY",
+      "filters": [
+        {
+          "filterType": "ABI",
+          "value": "armeabi-v7a"
+        }
+      ],
+      "attributes": [],
+      "versionCode": 2413,
+      "versionName": "32.23",
+      "outputFile": "SmartTube_stable_32.23_armeabi-v7a.apk"
+    }
+  ],
+  "elementType": "File"
+}
