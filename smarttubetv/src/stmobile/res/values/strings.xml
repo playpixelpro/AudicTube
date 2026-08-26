@@ -35,6 +35,9 @@
     <string name="mobile_about_check_failed">Couldn\'t check for updates. Check your connection and try again.</string>
     <string name="mobile_about_open_releases">Open releases</string>
     <string name="mobile_about_download">Download APK</string>
+    <string name="mobile_about_downloading">Downloading update</string>
+    <string name="mobile_about_downloading_message">The APK is being downloaded securely. Android will ask for confirmation before installing it.</string>
+    <string name="mobile_about_download_failed">The update could not be downloaded. Check your connection and try again.</string>
     <string name="mobile_about_url_releases" translatable="false">https://github.com/playpixelpro/AudicTube/releases</string>
     <!-- GitHub releases LIST endpoint (not /releases/latest, which hides prereleases/betas). -->
     <string name="mobile_about_url_releases_api" translatable="false">https://api.github.com/repos/playpixelpro/AudicTube/releases?per_page=30</string>

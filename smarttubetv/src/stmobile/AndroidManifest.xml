@@ -23,6 +23,7 @@
         android:name="android.hardware.touchscreen"
         android:required="true"
         tools:replace="android:required" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- Point the phone build at its own Application class (routing seam for later phases),
          and swap in the phone-port branding (adaptive launcher icon, "SmarterTube" label

@@ -537,7 +537,8 @@ public class MobilePlaybackFragment extends PlaybackFragment {
 
         if (isOverlayShown()) {
             // Taps on the visible control bar pass through to the underlying buttons.
-            if (isTapOnControlBar(event)) {
+            if (isTapOnControlBar(event)
+                    || viewContainsRaw(mShortsBackBtn, event.getRawX(), event.getRawY())) {
                 return false;
             }
             // Tap on empty video area hides the controls immediately.

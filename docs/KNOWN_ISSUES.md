@@ -28,8 +28,9 @@ Current release: `v0.5.0-beta.4+st32.23`  ·  Upstream SmartTube base: `32.23`  
   work; the TV client has no composer. Not planned for the beta line.
 - **Notification bell / inbox is not implemented.** The upstream notifications source was dead;
   upload alerts are delivered via a subscriptions-feed poll instead.
-- **No in-app APK install.** "Check for updates" detects a newer release and opens the GitHub
-  asset/release URL; the user installs the APK manually.
+- **APK installation requires system confirmation.** "Check for updates" downloads the compatible
+  APK inside the mobile app, then hands it to Android's package installer. Android still requires
+  the user to confirm installation; no external browser is opened.
 - **Casting / Chromecast is not implemented.**
 
 ## Settings UI (mobile-friendly inputs)

@@ -3,6 +3,7 @@ package com.liskovsoft.smartyoutubetv2.mobile.ui.about;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.liskovsoft.smartyoutubetv2.mobile.update.MobileUpdateChecker;
+import com.liskovsoft.smartyoutubetv2.mobile.update.MobileApkInstaller;
+import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.smartyoutubetv2.tv.BuildConfig;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 
@@ -26,11 +29,14 @@ import com.liskovsoft.smartyoutubetv2.tv.R;
  */
 public class MobileAboutActivity extends AppCompatActivity {
     private boolean mChecking;
+    private MobileApkInstaller mApkInstaller;
+    private AlertDialog mDownloadDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mobile_about_activity);
+        mApkInstaller = new MobileApkInstaller(this);
 
         ((TextView) findViewById(R.id.about_version))
                 .setText(getString(R.string.mobile_about_version, BuildConfig.VERSION_NAME));
@@ -81,7 +87,7 @@ public class MobileAboutActivity extends AppCompatActivity {
         switch (result.status) {
             case UPDATE_AVAILABLE:
                 builder.setMessage(getString(R.string.mobile_about_update_available, result.latestTag))
-                        .setPositiveButton(R.string.mobile_about_download, (d, w) -> openUrl(result.assetUrl))
+                        .setPositiveButton(R.string.mobile_about_download, (d, w) -> downloadAndInstall(result.assetUrl))
                         .setNeutralButton(R.string.mobile_about_open_releases,
                                 (d, w) -> openUrl(releaseOrFallback(result.releaseUrl)))
                         .setNegativeButton(android.R.string.cancel, null);
@@ -105,6 +111,82 @@ public class MobileAboutActivity extends AppCompatActivity {
                 break;
         }
         builder.show();
+    }
+
+    private void downloadAndInstall(String assetUrl) {
+        if (assetUrl == null || mApkInstaller.isRunning()) {
+            return;
+        }
+
+        ProgressBar progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        progress.setMax(100);
+        progress.setIndeterminate(true);
+        mDownloadDialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.mobile_about_downloading)
+                .setMessage(R.string.mobile_about_downloading_message)
+                .setView(progress)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> mApkInstaller.cancel())
+                .setOnCancelListener(dialog -> mApkInstaller.cancel())
+                .create();
+        mDownloadDialog.show();
+
+        mApkInstaller.download(assetUrl, new MobileApkInstaller.Listener() {
+            @Override
+            public void onProgress(int percent) {
+                runOnUiThread(() -> {
+                    if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
+                        progress.setIndeterminate(false);
+                        progress.setProgress(percent);
+                    }
+                });
+            }
+
+            @Override
+            public void onCompleted(java.io.File apk) {
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+                    dismissDownloadDialog();
+                    Helpers.installPackage(MobileAboutActivity.this, apk.getAbsolutePath());
+                });
+            }
+
+            @Override
+            public void onFailed(Exception error) {
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+                    dismissDownloadDialog();
+                    new AlertDialog.Builder(MobileAboutActivity.this)
+                            .setMessage(R.string.mobile_about_download_failed)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                });
+            }
+
+            @Override
+            public void onCancelled() {
+                runOnUiThread(MobileAboutActivity.this::dismissDownloadDialog);
+            }
+        });
+    }
+
+    private void dismissDownloadDialog() {
+        if (mDownloadDialog != null) {
+            mDownloadDialog.dismiss();
+            mDownloadDialog = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mApkInstaller != null) {
+            mApkInstaller.cancel();
+        }
+        dismissDownloadDialog();
+        super.onDestroy();
     }
 
     /** Fall back to the fork releases page when a release has no notes URL. */

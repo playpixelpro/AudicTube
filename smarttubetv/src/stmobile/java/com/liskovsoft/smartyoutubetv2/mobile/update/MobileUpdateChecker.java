@@ -35,7 +35,8 @@ import okhttp3.Response;
  *
  * <p>The selection logic ({@link #selectFrom}) is pure and unit-tested; the network fetch and
  * JSON parsing are thin wrappers around it. Failures are reported, never thrown to the caller.
- * It does not install APKs: it surfaces the asset/release URL for the UI to open.
+ * It returns the selected asset URL; the mobile UI downloads that asset and hands the completed
+ * APK to Android's package installer.
  */
 public final class MobileUpdateChecker {
     private static final String TAG = MobileUpdateChecker.class.getSimpleName();
