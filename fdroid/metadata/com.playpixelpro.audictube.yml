@@ -1,25 +1,25 @@
 Categories:
   - Multimedia
 License: MIT
-AuthorName: CodeSculptor
-WebSite: https://github.com/CodeSculptor/SmarterTube
-SourceCode: https://github.com/CodeSculptor/SmarterTube
-IssueTracker: https://github.com/CodeSculptor/SmarterTube/issues
+AuthorName: PlayPixelPro
+WebSite: https://github.com/playpixelpro/AudicTube
+SourceCode: https://github.com/playpixelpro/AudicTube
+IssueTracker: https://github.com/playpixelpro/AudicTube/issues
 
 AntiFeatures:
   - NonFreeNet
 
-Name: SmarterTube
+Name: AudicTube
 Summary: Phone & tablet companion build of SmartTube
 
 Description: |-
-  SmarterTube is an Android phone/tablet companion build of SmartTube. It adds a
+  AudicTube is an Android phone/tablet companion build of SmartTube. It adds a
   portrait, touch-first interface — drawer navigation, search, channel pages,
   portrait playback and Shorts, in-app comments and sign-in — on top of the
   upstream SmartTube YouTube-client engine.
 
   It is a companion to SmartTube, not a replacement: for Android TV boxes and
-  sticks install upstream SmartTube. SmarterTube installs alongside the TV build
+  sticks install upstream SmartTube. AudicTube installs alongside the TV build
   (package com.playpixelpro.audictube) and the two do not conflict.
 
   Engine features inherited from upstream include SponsorBlock, Return YouTube

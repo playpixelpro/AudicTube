@@ -1,11 +1,11 @@
-# SmarterTube self-hosted F-Droid repository
+# AudicTube self-hosted F-Droid repository
 
-This directory is the source for SmarterTube's own F-Droid repository. It serves the
-**exact APKs published on GitHub Releases**, signed with the SmarterTube release key,
+This directory is the source for AudicTube's own F-Droid repository. It serves the
+**exact APKs published on GitHub Releases**, signed with the AudicTube release key,
 so an F-Droid install upgrades in place over a GitHub/Obtainium install (same cert).
 
 The repo is published to GitHub Pages at
-`https://codesculptor.github.io/SmarterTube/fdroid/repo` by
+`https://playpixelpro.github.io/AudicTube/fdroid/repo` by
 [`.github/workflows/fdroid-publish.yml`](../.github/workflows/fdroid-publish.yml),
 which runs automatically when a GitHub Release is published (and on manual dispatch).
 
@@ -13,7 +13,7 @@ which runs automatically when a GitHub Release is published (and on manual dispa
 
 | Key | File | Used for | Where it lives |
 |---|---|---|---|
-| **APK signing key** | `smartertube-release.jks` (cert `50fdb412…`) | signs the APKs | local + off-repo backup only — **never** in CI |
+| **APK signing key** | `key.jks` (cert from `SIGNING_KEY` secret) | signs the APKs | GitHub Actions secret + off-repo backup — **never** local |
 | **Repo-index key** | `fdroid/keystore.p12` | signs only the repo *index* | GitHub Actions secret + off-repo backup |
 
 F-Droid does **not** re-sign the APKs — it serves ours as-is. The repo-index key only
@@ -31,21 +31,18 @@ the fingerprint changes and every user must re-add the repo.
    wrote — keep our public settings; make sure `repo_keyalias` matches what init created
    (default `repokey`). Do **not** add the password lines to the committed file.
 4. Provide the repo icon at `fdroid/repo/icon.png` (a copy of the launcher icon is fine).
-5. **Back up** `fdroid/keystore.p12` + the passwords + fingerprint to
-   `C:\Users\steph\Backups\SmarterTube-release-key\` (alongside the APK key). See
-   `memory/release_signing.md`.
+5. **Back up** `fdroid/keystore.p12` + the passwords + fingerprint to a safe location.
 6. Set the GitHub Actions secrets (values from step 2):
 
    ```
-   gh secret set FDROID_KEYSTORE_P12_BASE64 --repo CodeSculptor/SmarterTube < <(base64 -w0 fdroid/keystore.p12)
-   gh secret set FDROID_KEYSTORE_PASS       --repo CodeSculptor/SmarterTube   # the keystorepass
-   gh secret set FDROID_KEY_PASS            --repo CodeSculptor/SmarterTube   # the keypass
+   gh secret set FDROID_KEYSTORE_P12_BASE64 --repo playpixelpro/AudicTube < <(base64 -w0 fdroid/keystore.p12)
+   gh secret set FDROID_KEYSTORE_PASS       --repo playpixelpro/AudicTube   # the keystorepass
+   gh secret set FDROID_KEY_PASS            --repo playpixelpro/AudicTube   # the keypass
    ```
 
-7. In the repo's GitHub settings, set **Pages → Build and deployment → Source = GitHub
-   Actions**.
+7. In the repo's GitHub settings, set **Pages → Build and deployment → Source = GitHub Actions**.
 8. Trigger the workflow once (`workflow_dispatch`) and confirm
-   `https://codesculptor.github.io/SmarterTube/fdroid/repo/index-v2.json` loads.
+   `https://playpixelpro.github.io/AudicTube/fdroid/repo/index-v2.json` loads.
 9. Put the URL + fingerprint in the project `README.md` "Install via F-Droid" section.
 
 ## What is committed vs generated

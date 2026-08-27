@@ -66,6 +66,10 @@ fdroid/repo/status/
 fdroid/archive/
 fdroid/tmp/
 fdroid/srclibs/
+fdroid/repo/jar/                                                                                                                                                                       26,664 tokens
+fdroid/repo/srclib/                                                                                                                                                                    3% used
+fdroid/repo/*.yml                                                                                                                                                                      $0.01 spent
+fdroid/repo/*.yaml
 
 # Local screenshot scratch (alpha2 device-verification captures)
 /alpha2_*.png
@@ -92,3 +96,4 @@ tmp/
 fabric.properties
 *BAK.java
 hs_err_pid*.log
+venv/
