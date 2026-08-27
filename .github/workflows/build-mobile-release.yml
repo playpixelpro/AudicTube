@@ -68,11 +68,27 @@ jobs:
 
       - name: Build stmobile and stfdroid release APKs
         run: |
-          ./gradlew :smarttubetv:assembleStmobileRelease :smarttubetv:assembleStfdroidRelease \
-            -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g" \
-            -PversionName="${{ steps.version.outputs.version }}" \
-            ${{ inputs.version_code != '' && format('-PversionCode={0}', inputs.version_code) || '' }} \
-            --no-daemon -x lint
+          # Retry up to 3 times to handle transient network errors
+          # from Google's Maven repository (premature end of Content-Length).
+          max_retries=3
+          retry_delay=15
+          for ((i=1; i<=max_retries; i++)); do
+            echo "--- Build attempt $i of $max_retries ---"
+            if ./gradlew :smarttubetv:assembleStmobileRelease :smarttubetv:assembleStfdroidRelease \
+              -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g" \
+              -PversionName="${{ steps.version.outputs.version }}" \
+              ${{ inputs.version_code != '' && format('-PversionCode={0}', inputs.version_code) || '' }} \
+              --no-daemon -x lint; then
+              echo "Build succeeded on attempt $i"
+              exit 0
+            fi
+            if [ $i -lt $max_retries ]; then
+              echo "Build failed (attempt $i), retrying in ${retry_delay}s..."
+              sleep $retry_delay
+            fi
+          done
+          echo "Build failed after $max_retries attempts"
+          exit 1
         env:
           STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
 
