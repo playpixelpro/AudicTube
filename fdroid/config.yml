@@ -1,4 +1,4 @@
-# F-Droid self-hosted repo config for SmarterTube.
+# F-Droid self-hosted repo config for AudicTube.
 #
 # This file is COMMITTED and holds only PUBLIC settings. The two secret password
 # lines (keystorepass / keypass) are appended at build time by the
@@ -6,19 +6,19 @@
 # must NEVER be committed here, and the keystore + this file (after injection) are
 # NEVER published to Pages (only repo/ and archive/ are). See fdroid/README.md.
 
-repo_url: https://codesculptor.github.io/SmarterTube/fdroid/repo
-repo_name: SmarterTube
+repo_url: https://playpixelpro.github.io/AudicTube/fdroid/repo
+repo_name: AudicTube
 repo_description: >-
-  Self-hosted F-Droid repository for SmarterTube — the Android phone/tablet
+  Self-hosted F-Droid repository for AudicTube — the Android phone/tablet
   companion build of SmartTube. The APKs here are the exact builds published on
   GitHub Releases, signed with the same key, so installs upgrade in place.
 repo_icon: icon.png
 
 archive_older: 6
-archive_url: https://codesculptor.github.io/SmarterTube/fdroid/archive
-archive_name: SmarterTube (archive)
+archive_url: https://playpixelpro.github.io/AudicTube/fdroid/archive
+archive_name: AudicTube (archive)
 archive_description: >-
-  Older SmarterTube releases, retained for downgrade/history.
+  Older AudicTube releases, retained for downgrade/history.
 archive_icon: icon.png
 
 # Repo-INDEX signing key (distinct from the APK signing key, which never enters CI).

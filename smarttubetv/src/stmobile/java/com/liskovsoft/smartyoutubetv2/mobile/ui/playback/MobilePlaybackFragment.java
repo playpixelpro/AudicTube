@@ -165,6 +165,10 @@ public class MobilePlaybackFragment extends PlaybackFragment {
     // the auto-hide setting is on, so firing always means "hide now".
     private final Runnable mHideShortsChr = () -> setShortsChrome(false);
 
+    /** True when the current touch gesture began with the overlay hidden. Guards against
+     *  ACTION_UP immediately re-hiding the overlay that was just shown by ACTION_DOWN's tickle. */
+    private boolean mGestureStartedWithHiddenOverlay;
+
     /**
      * Suggestion groups in arrival order. In strip mode the Leanback suggestion rows are kept out
      * of the rows adapter entirely (they render inside the 16:9 strip and their cards remain
@@ -530,6 +534,13 @@ public class MobilePlaybackFragment extends PlaybackFragment {
             return handleShortsTouchEvent(event);
         }
 
+        // Track whether the current gesture started while the overlay was hidden,
+        // so ACTION_UP doesn't immediately re-hide the overlay that ACTION_DOWN
+        // just showed via tickle().
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            mGestureStartedWithHiddenOverlay = !isOverlayShown();
+        }
+
         // Non-Shorts: single tap toggles the controls. A tap on the control bar
         // itself (buttons, seek bar, time, dock) must reach the buttons — especially
         // the fullscreen toggle — so only empty-video taps hide the overlay.
@@ -541,8 +552,10 @@ public class MobilePlaybackFragment extends PlaybackFragment {
                     || viewContainsRaw(mShortsBackBtn, event.getRawX(), event.getRawY())) {
                 return false;
             }
-            // Tap on empty video area hides the controls immediately.
-            if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            // Tap on empty video area hides the controls — but only if this gesture
+            // started with the overlay already shown (not one we just revealed).
+            if (event.getActionMasked() == MotionEvent.ACTION_UP
+                    && !mGestureStartedWithHiddenOverlay) {
                 hideControlsOverlay(true);
             }
             return true;

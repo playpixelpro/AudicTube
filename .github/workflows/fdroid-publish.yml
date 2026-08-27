@@ -1,6 +1,6 @@
 name: Publish F-Droid repo
 
-# Regenerates SmarterTube's self-hosted F-Droid repository index from the APKs
+# Regenerates AudicTube's self-hosted F-Droid repository index from the APKs
 # attached to GitHub Releases and deploys it to GitHub Pages.
 #
 # It serves OUR already-signed APKs as-is (F-Droid does not re-sign), so an F-Droid
@@ -67,8 +67,14 @@ jobs:
           gh release list --repo "$GITHUB_REPOSITORY" --limit 4 --json tagName --jq '.[].tagName' \
             | while read -r tag; do
                 echo "Downloading APKs for $tag"
-                gh release download "$tag" --repo "$GITHUB_REPOSITORY" \
-                  --pattern '*.apk' --dir fdroid/repo --skip-existing || true
+                # Retry up to 12 times (2 min total) to handle the timing race where
+                # the release is published before APK uploads complete.
+                for i in {1..12}; do
+                  gh release download "$tag" --repo "$GITHUB_REPOSITORY" \
+                    --pattern '*.apk' --dir fdroid/repo --skip-existing && break
+                  echo "Attempt $i for $tag: no APKs yet, waiting 10s..."
+                  sleep 10
+                done
               done
           echo "APKs present:"; ls -1 fdroid/repo/*.apk || (echo "::error::no APKs downloaded"; exit 1)
 

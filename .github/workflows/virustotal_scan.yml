@@ -38,7 +38,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p release_assets
-          gh release download "$TAG_NAME" --dir release_assets --pattern "*.apk"
+          for i in {1..12}; do
+            gh release download "$TAG_NAME" --dir release_assets --pattern "*.apk"
+            if ls release_assets/*.apk 1>/dev/null 2>&1; then
+              echo "Downloaded APKs successfully"
+              exit 0
+            fi
+            echo "Attempt $i: APKs not found yet, waiting 10s..."
+            sleep 10
+          done
+          echo "ERROR: APKs not found after 120s"
+          exit 1
 
       - name: VirusTotal Scan
         if: ${{ env.HAS_VT_KEY == 'true' }}
