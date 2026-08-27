@@ -58,6 +58,10 @@ jobs:
           vt_api_key: ${{ secrets.VIRUS_TOTAL_API_KEY }}
           files: |
             release_assets/*.apk
+          # Scan local files, not GitHub Release assets (the action defaults to
+          # release: true on a release event, which looks at attached release
+          # assets instead of the files we downloaded in the previous step).
+          release: false
           request_rate: 4
 
       - name: Generate Custom Badge Report
