@@ -1,8 +1,13 @@
 name: VirusTotal Scan
 
 on:
-  release:
-    types: [published]
+  # Runs after the release build workflow completes (not on a `release` event).
+  # The ghaction-virustotal v5 action scans LOCAL files when the triggering
+  # event is NOT `release`; waiting for the build to finish also guarantees the
+  # release assets are already uploaded, avoiding the publish/upload race.
+  workflow_run:
+    workflows: ['Build Signed Release APK (Mobile Only)']
+    types: [completed]
   workflow_dispatch:
     inputs:
       release_tag:
@@ -11,6 +16,8 @@ on:
 
 jobs:
   virustotal_scan:
+    # Only act on successful, tag-triggered release builds (or manual dispatch).
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'v')) }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -23,7 +30,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "TAG_NAME=${{ github.event.inputs.release_tag }}" >> $GITHUB_ENV
           else
-            echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+            echo "TAG_NAME=${{ github.event.workflow_run.head_branch }}" >> $GITHUB_ENV
           fi
 
       - name: Set report marker variable
@@ -58,11 +65,16 @@ jobs:
           vt_api_key: ${{ secrets.VIRUS_TOTAL_API_KEY }}
           files: |
             release_assets/*.apk
-          # Scan local files, not GitHub Release assets (the action defaults to
-          # release: true on a release event, which looks at attached release
-          # assets instead of the files we downloaded in the previous step).
-          release: false
           request_rate: 4
+
+      - name: Verify scan produced results
+        if: ${{ env.HAS_VT_KEY == 'true' }}
+        run: |
+          if [ -z "${{ steps.vt.outputs.analysis }}" ]; then
+            echo "VirusTotal scan produced no results (no APKs were analyzed)."
+            exit 1
+          fi
+          echo "VirusTotal scan completed: ${{ steps.vt.outputs.analysis }}"
 
       - name: Generate Custom Badge Report
         if: steps.vt.outcome == 'success'
